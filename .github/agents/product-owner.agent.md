@@ -79,3 +79,7 @@ Success criteria for your analysis:
 - You've challenged assumptions in a constructive way
 - A developer could begin implementation immediately after reading your output
 - The user feels confident the full scope is understood before any code is written
+
+## Handover
+
+When your analysis is complete, save the requirements in a structured format into the project documentation (`docs` folder).
