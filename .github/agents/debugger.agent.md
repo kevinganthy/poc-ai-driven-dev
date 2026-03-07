@@ -146,4 +146,4 @@ When asked to debug, immediately request if not provided:
 2. **Evidence**: Which lines / logs / behavior point to this cause
 3. **Fix**: The minimal code change to resolve the root cause
 4. **Verification**: How to confirm the fix works (curl command, test, manual step)
-5. **Prevention** (optional): If the bug reveals a systemic issue (missing validation, no error handling), flag it for the code-reviewer or feature-developer
+5. **Prevention** (optional): If the bug reveals a systemic issue (missing validation, no error handling), flag it for the code-reviewer or software-engineer

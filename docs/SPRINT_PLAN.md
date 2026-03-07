@@ -171,7 +171,7 @@
 
 ---
 
-## 6. Handoff to feature-developer
+## 6. Handoff to software-engineer
 
 ### Sprint de démarrage : **Sprint 1**
 
