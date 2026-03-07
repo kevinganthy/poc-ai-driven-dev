@@ -1,5 +1,8 @@
 {
 	"/": [],
 	"/login": [],
-	"/register": []
+	"/register": [],
+	"/tickets": [],
+	"/tickets/new": [],
+	"/tickets/[id]/edit": []
 }

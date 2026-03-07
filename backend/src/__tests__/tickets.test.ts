@@ -190,3 +190,115 @@ describe('POST /tickets', () => {
     expect(prisma.ticket.create).not.toHaveBeenCalled();
   });
 });
+
+// ── GET /tickets/:id ──────────────────────────────────────────────────────────
+describe('GET /tickets/:id', () => {
+  it('returns 200 with the ticket for the owner', async () => {
+    const userId = 'user-1';
+    mockFindUnique.mockResolvedValue({
+      id: 'ticket-id-1',
+      title: 'My ticket',
+      description: 'Something important',
+      status: 'open',
+      authorId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const res = await request(app)
+      .get('/tickets/ticket-id-1')
+      .set('Authorization', `Bearer ${makeToken('user', userId)}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('id', 'ticket-id-1');
+    expect(res.body).toHaveProperty('status', 'open');
+  });
+
+  it("returns 403 when a user accesses another user's ticket", async () => {
+    mockFindUnique.mockResolvedValue({
+      id: 'ticket-id-1',
+      title: 'Other ticket',
+      description: 'Belongs to someone else',
+      status: 'open',
+      authorId: 'user-2',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const res = await request(app)
+      .get('/tickets/ticket-id-1')
+      .set('Authorization', `Bearer ${makeToken('user', 'user-1')}`);
+
+    expect(res.status).toBe(403);
+  });
+
+  it('returns 200 for admin accessing any ticket', async () => {
+    mockFindUnique.mockResolvedValue({
+      id: 'ticket-id-1',
+      title: 'Any ticket',
+      description: 'Belongs to a user',
+      status: 'in_progress',
+      authorId: 'user-1',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const res = await request(app)
+      .get('/tickets/ticket-id-1')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('status', 'in-progress'); // mapped from in_progress
+  });
+
+  it('returns 404 when ticket does not exist', async () => {
+    mockFindUnique.mockResolvedValue(null);
+
+    const res = await request(app)
+      .get('/tickets/non-existent')
+      .set('Authorization', `Bearer ${makeToken('user', 'user-1')}`);
+
+    expect(res.status).toBe(404);
+  });
+
+  it('returns 401 without a token', async () => {
+    const res = await request(app).get('/tickets/ticket-id-1');
+    expect(res.status).toBe(401);
+  });
+});
+
+// ── GET /tickets?status= — filter ────────────────────────────────────────────
+describe('GET /tickets — status query filter', () => {
+  it('applies the status filter when ?status=in-progress is provided', async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    await request(app)
+      .get('/tickets?status=in-progress')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(callArg.where).toHaveProperty('status', 'in_progress'); // converted to Prisma enum
+  });
+
+  it('applies the status filter when ?status=open is provided', async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    await request(app)
+      .get('/tickets?status=open')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(callArg.where).toHaveProperty('status', 'open');
+  });
+
+  it('does not apply a status filter when no query param is provided', async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    await request(app)
+      .get('/tickets')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(callArg.where).not.toHaveProperty('status');
+  });
+});
