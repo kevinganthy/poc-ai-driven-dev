@@ -16,8 +16,10 @@ app.get('/health', (_req, res) => {
 app.use('/auth', authRouter);
 app.use('/tickets', ticketsRouter);
 
-app.listen(env.PORT, () => {
-  console.log(`Backend running on port ${env.PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(env.PORT, () => {
+    console.log(`Backend running on port ${env.PORT}`);
+  });
+}
 
 export default app;
