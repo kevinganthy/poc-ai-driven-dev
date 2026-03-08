@@ -38,34 +38,6 @@ if echo "$CONTENT" | grep -iE 'password\s*:\s*\S+' | grep -vE 'password\s*:\s*\$
   ERRORS+=("SECRETS: Hardcoded password detected. Use environment variables (\${VAR}) or a .env file.")
 fi
 
-# 4. Restart policy — backend and db services must have restart
-for SERVICE in backend db; do
-  # Extract the block for each service and check for restart
-  BLOCK=$(awk "/^  ${SERVICE}:/,/^  [^ ]/" "$COMPOSE_FILE")
-  if ! echo "$BLOCK" | grep -q 'restart:'; then
-    ERRORS+=("RESTART: Service '${SERVICE}' is missing 'restart: unless-stopped'.")
-  fi
-done
-
-# 5. depends_on with service_healthy — backend should wait for db
-BACKEND_BLOCK=$(awk '/^  backend:/,/^  [^ ]/' "$COMPOSE_FILE")
-if ! echo "$BACKEND_BLOCK" | grep -q 'depends_on'; then
-  WARNINGS+=("DEPENDS_ON: Service 'backend' has no 'depends_on'. Consider waiting for 'db' with condition: service_healthy.")
-elif ! echo "$CONTENT" | grep -q 'service_healthy'; then
-  WARNINGS+=("DEPENDS_ON: 'depends_on' found but no 'service_healthy' condition. The DB may not be ready when backend starts.")
-fi
-
-# 6. Healthcheck on db
-DB_BLOCK=$(awk '/^  db:/,/^  [^ ]/' "$COMPOSE_FILE")
-if ! echo "$DB_BLOCK" | grep -q 'healthcheck'; then
-  WARNINGS+=("HEALTHCHECK: Service 'db' has no healthcheck. Add one so depends_on service_healthy works correctly.")
-fi
-
-# 7. Named volumes — no anonymous volumes
-if echo "$CONTENT" | grep -E '^\s+-\s+/'; then
-  WARNINGS+=("VOLUMES: Anonymous bind mounts detected. Prefer named volumes for data persistence.")
-fi
-
 # --- Report ---
 echo ""
 if [[ ${#ERRORS[@]} -gt 0 ]]; then

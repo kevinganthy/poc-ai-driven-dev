@@ -13,4 +13,4 @@ Lorsque l'utilisateur demande d'optimiser un Dockerfile ou de gérer ses ressour
 
 ### Exemple de transformation
 **Entrée utilisateur :** "Optimise mon Dockerfile Node.js"
-**Action du skill :** Générer un fichier avec une étape `build` et une étape `run` minimaliste.
+**Action du skill :** Générer un fichier avec les étapes `development`, `builder` et `runner` minimaliste. 

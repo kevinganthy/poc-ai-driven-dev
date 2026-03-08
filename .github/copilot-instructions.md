@@ -145,6 +145,8 @@ Les conventions détaillées sont dans les fichiers d'instructions spécialisés
 |---------|-------|---------|
 | [instructions/typescript.instructions.md](instructions/typescript.instructions.md) | `**/*.ts` | Naming, imports, types Zod, services, middleware, gestion d'erreurs, tests |
 | [instructions/svelte.instructions.md](instructions/svelte.instructions.md) | `**/*.svelte` | Runes ($state/$derived/$props), composants, formulaires, stores, navigation |
+| [instructions/docker.instructions.md](instructions/docker.instructions.md) | `**/Dockerfile,**/compose.yml` | Multi-stage builds, sécurité images, réseaux isolés, secrets, healthcheck |
+| [instructions/database.instructions.md](instructions/database.instructions.md) | `**/schema.prisma,**/migrations/**,**/seed.ts` | IDs cuid, index, relations, enums, pagination, migrations, seed idempotent |
 
 ### Règles transversales
 
@@ -190,7 +192,7 @@ Les conventions détaillées sont dans les fichiers d'instructions spécialisés
 | `tech-writer` | Mettre à jour README, générer OpenAPI, rédiger guides de migration, préparer la PR | En fin de sprint, après la code review |
 
 product-owner → software-architect → scrum-master
-                                    ↙              ↘
+                                      ↙      ↘
                           test-engineer  <->  software-engineer
                                           ↓
                                       code-reviewer
