@@ -145,3 +145,24 @@ At the end of your work, provide a concise summary:
 - **"This function could be simplified"** — simplification that changes semantics is a bug risk; only simplify if behavior is provably identical
 - **"I should add a comment to explain this"** — no. You clean code, you don't document it. If it needs explanation, that's a separate concern.
 - **"While I'm here, I'll also fix..."** — no. Stay in scope. File a mental note and report it in the summary.
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: tech-debt-cleaner
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

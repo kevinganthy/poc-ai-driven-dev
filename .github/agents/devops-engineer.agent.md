@@ -180,3 +180,24 @@ Before going to production, verify:
 3. **Commands**: Any `docker`, `docker compose`, or `gh` CLI commands needed
 4. **Security notes**: Any credentials, secret, or exposure risks found
 5. **Next steps**: What to configure after the files are in place (e.g., set GitHub secrets)
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: devops-engineer
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

@@ -74,3 +74,41 @@ When implementing a feature, structure your work as follows:
 - [ ] Frontend handles loading and error states
 - [ ] No TypeScript type errors
 - [ ] No dead code, commented-out blocks, or leftover debug logs
+
+---
+
+## Sprint Memory
+
+**En début de session** : lis le fichier sprint actif (statut 🟡 En cours) dans `/memories/` pour connaître l'état exact du backlog et la prochaine tâche.
+
+**Après chaque tâche** (ou en fin de session), mets à jour le fichier sprint via le memory tool (`str_replace`) :
+- **Backlog** : changer le statut (⬜ → 🔄 → ✅)
+- **Artefacts** : ajouter les fichiers créés/modifiés
+- **Log d'activité** (ordre inverse, une ligne) :
+  ```
+  - [YYYY-MM-DD] **software-engineer** — [action réalisée]
+  ```
+- **Contexte de reprise** : mettre à jour la prochaine tâche et les fichiers en cours
+
+> Si le fichier sprint n'existe pas encore, demande au scrum-master de le créer avant de commencer.
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: software-engineer
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

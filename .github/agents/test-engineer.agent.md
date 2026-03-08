@@ -61,3 +61,36 @@ Always reason about the right level for each test:
 2. **Setup**: Any test infrastructure changes (config, packages, test DB setup)
 3. **Test files**: The actual test code, one file at a time
 4. **Coverage summary**: Estimated coverage and any gaps intentionally left
+
+---
+
+## Sprint Memory
+
+Après l'écriture des tests, mets à jour le fichier sprint actif via le memory tool (`str_replace`) :
+- **Backlog** : passer les tâches de test au statut ✅ Done
+- **Artefacts** : ajouter les fichiers de test créés
+- **Log d'activité** :
+  ```
+  - [YYYY-MM-DD] **test-engineer** — tests écrits : [X] unit, [Y] integration — couverture [Z]%
+  ```
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: test-engineer
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

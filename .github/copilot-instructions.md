@@ -210,6 +210,35 @@ product-owner → software-architect → scrum-master
 | `docker-optimizer` | `skills/docker/optimizer/` | Optimiser les Dockerfiles (multi-stage, layer cache) |
 | `git-smart-commit` | `skills/git/smart-commit/` | Générer des messages de commit sémantiques |
 | `agent-handover` | `skills/workflow/handover/` | Transférer le contexte entre agents |
+| `feedback-loop` | `skills/feedback-loop/` | Enregistrer et exploiter les feedbacks utilisateur |
+| `sprint-memory` | `skills/sprint-memory/` | Créer et maintenir la mémoire de sprint (`sprint_[N]_[nom].md`) |
+
+---
+
+## Feedback Loop (mémoire persistante)
+
+Chaque agent implémente un **feedback loop** pour améliorer la qualité des suggestions au fil du temps :
+
+1. **En début de session** : l'agent lit `/memories/feedback.md` et applique les patterns connus (accepted patterns à renforcer, anti-patterns à éviter).
+2. **En fin de session** : l'agent demande un feedback (`accepted / modified / rejected`) et l'enregistre dans `/memories/feedback.md`.
+3. **Distillation** : quand une leçon revient ≥2 fois, elle remonte dans la section **Patterns & Lessons Learned**.
+
+> Fichier de mémoire : `/memories/feedback.md` (persistant entre toutes les conversations)
+
+---
+
+## Sprint Memory (mémoire de sprint)
+
+Chaque sprint est tracé dans un fichier mémoire dédié pour permettre un **suivi humain rapide** et une **reprise de sprint par les agents** sans perte de contexte :
+
+- **Nommage** : `/memories/sprint_[N]_[nom].md` (ex : `sprint_2_crud-tickets.md`)
+- **Créé par** : `scrum-master` à la fin de la planification (depuis le template)
+- **Mis à jour par** : `software-engineer`, `test-engineer`, `code-reviewer`, `debugger` tout au long du sprint
+- **Clôturé par** : `tech-writer` avec rétrospective
+
+**Contenu** : métadonnées · objectif · backlog avec statuts · problèmes & blocages · décisions · artefacts · log d'activité · contexte de reprise pour agents · rétrospective
+
+> Template : `.github/skills/sprint-memory/template.md` · Protocole complet : `.github/skills/sprint-memory/SKILL.md`
 
 ---
 

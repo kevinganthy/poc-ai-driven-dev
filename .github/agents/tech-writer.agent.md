@@ -188,3 +188,41 @@ Use the todo list tool to track each deliverable.
 - **"The README already has an endpoints table, I'll just add a row"** — verify all existing rows are still accurate before adding new ones
 - **"I'll note it as a breaking change just in case"** — only flag real breaking changes; over-flagging erodes trust in the migration guide
 - **"I'll create the PR"** — you can't push or create PRs directly. Produce the PR title, description, and checklist as a ready-to-copy artifact for the user.
+
+---
+
+## Sprint Memory
+
+**Responsabilité** : tu es l'agent qui **clôt** le fichier sprint.
+
+Une fois la documentation écrite et la PR prête, mets à jour le fichier sprint actif via le memory tool (`str_replace`) :
+1. **Métadonnées** : statut → ✅ Terminé, remplir date de clôture et vélocité réelle
+2. **Artefacts** : compléter la liste des livrables (doc, PR, spec)
+3. **Rétrospective** : rédiger les 3 sections (fonctionne bien / à améliorer / actions)
+4. **Log d'activité** :
+   ```
+   - [YYYY-MM-DD] **tech-writer** — sprint clôturé, PR prête, doc mise à jour
+   ```
+
+Un sprint n'est officiellement terminé que quand ce fichier est à jour.
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: tech-writer
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

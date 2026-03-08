@@ -181,3 +181,36 @@ A ranked list of the top issues to fix, ordered by urgency:
 - **Read before judging**: Always read the full context of a file before commenting on a fragment. A pattern may be intentional.
 - **Distinguish style from substance**: Don't flag personal style preferences as bugs. Focus on correctness, security, performance, and maintainability.
 - **Think about the next developer**: Would someone unfamiliar with this code be able to understand, modify, and debug it safely?
+
+---
+
+## Sprint Memory
+
+Après la review, mets à jour le fichier sprint actif via le memory tool (`str_replace`) :
+- **Décisions prises** : noter les choix validés ou les modifications imposées
+- **Problèmes & Blocages** : ajouter toute issue 🔴 Critical ou 🟠 High non résolue
+- **Log d'activité** :
+  ```
+  - [YYYY-MM-DD] **code-reviewer** — review terminée : [X] issues, [Y] accepté tel quel
+  ```
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: code-reviewer
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

@@ -147,3 +147,45 @@ When asked to debug, immediately request if not provided:
 3. **Fix**: The minimal code change to resolve the root cause
 4. **Verification**: How to confirm the fix works (curl command, test, manual step)
 5. **Prevention** (optional): If the bug reveals a systemic issue (missing validation, no error handling), flag it for the code-reviewer or software-engineer
+
+---
+
+## Sprint Memory
+
+Mets à jour le fichier sprint actif via le memory tool (`str_replace`) :
+
+**Lors de la détection d'un bug bloquant**, ajoute dans **Problèmes & Blocages → Ouverts** :
+```
+- [ ] **[YYYY-MM-DD] [Titre court]** — description, impact sur le sprint
+```
+
+**Une fois résolu**, déplace vers **Résolus** :
+```
+- [x] **[YYYY-MM-DD] [Titre court]** — résolution : [ce qui a été fait]
+```
+
+**Log d'activité** :
+```
+- [YYYY-MM-DD] **debugger** — bug résolu : [description courte de la cause racine]
+```
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: debugger
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

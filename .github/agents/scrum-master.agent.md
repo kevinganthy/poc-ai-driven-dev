@@ -112,3 +112,39 @@ Describe the critical path in plain text or as a list of dependency chains.
 - [ ] All task dependencies are explicit and respected in the sprint plan
 - [ ] Risks are identified and have mitigation suggestions
 - [ ] The handoff section gives the software-engineer a clear starting point
+
+---
+
+## Sprint Memory
+
+**Responsabilité principale** : tu es l'agent qui **crée** le fichier mémoire de sprint.
+
+À la fin de la planification, crée `/memories/sprint_[N]_[nom].md` via le memory tool :
+1. Copie le template depuis `.github/skills/sprint-memory/template.md`
+2. Remplis les métadonnées (numéro, nom, dates, vélocité cible)
+3. Copie le backlog planifié dans la section **Backlog** (statut ⬜ Todo)
+4. Remplis **Objectif du sprint**
+5. Laisse la section **Contexte de reprise** avec la première tâche comme prochaine tâche
+
+Format du nom : `sprint_[N]_[slug-court].md` (ex : `sprint_2_crud-tickets.md`)
+
+---
+
+## Feedback Loop
+
+**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
+- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+
+**En fin de session** : avant de rendre la main, demande :
+> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+
+Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
+```markdown
+### [YYYY-MM-DD] agent: scrum-master
+**Task**: description courte  
+**Outcome**: accepted | modified | rejected  
+**Comment**: commentaire de l'utilisateur  
+**Lesson**: ce qu'il faut renforcer ou éviter  
+```
+Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.
