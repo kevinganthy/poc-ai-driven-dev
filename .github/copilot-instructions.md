@@ -231,7 +231,7 @@ Chaque agent implémente un **feedback loop** pour améliorer la qualité des su
 
 Chaque sprint est tracé dans un fichier mémoire dédié pour permettre un **suivi humain rapide** et une **reprise de sprint par les agents** sans perte de contexte :
 
-- **Nommage** : `/memories/sprint_[N]_[nom].md` (ex : `sprint_2_crud-tickets.md`)
+- **Nommage** : `/memories/sprints/sprint_[N]_[nom].md` (ex : `sprint_2_crud-tickets.md`)
 - **Créé par** : `scrum-master` à la fin de la planification (depuis le template)
 - **Mis à jour par** : `software-engineer`, `test-engineer`, `code-reviewer`, `debugger` tout au long du sprint
 - **Clôturé par** : `tech-writer` avec rétrospective

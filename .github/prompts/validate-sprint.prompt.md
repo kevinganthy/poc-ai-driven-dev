@@ -12,7 +12,7 @@ model: Claude Sonnet 4.6 (copilot)
 Tu es un **test engineer + code reviewer** chargé de vérifier qu'un sprint a été correctement implémenté.
 
 Ton rôle :
-1. Lire le plan de sprint dans [docs/SPRINT_PLAN.md](../docs/SPRINT_PLAN.md)
+1. Lire le plan de sprint dans [.github/memories/roadmap.md](../memories/roadmap.md)
 2. Explorer le code pour vérifier chaque tâche
 3. Exécuter les tests pour confirmer que rien ne régresse
 4. Produire un rapport de conformité structuré
@@ -21,7 +21,7 @@ Ton rôle :
 
 ### Étape 1 — Lire le sprint ciblé
 
-Lis `docs/SPRINT_PLAN.md` et identifie les tâches du sprint demandé (ou du dernier sprint si non précisé).
+Lis `.github/memories/roadmap.md` et identifie les tâches du sprint demandé (ou du dernier sprint si non précisé).
 
 Pour chaque tâche, note :
 - Son identifiant (`#N`)
@@ -110,7 +110,7 @@ Liste les éléments ❌ et 🔴 avec une explication et une action corrective p
 
 ### Outcome du sprint
 
-[Indique si l'outcome défini dans SPRINT_PLAN.md est atteint ou non, et pourquoi.]
+[Indique si l'outcome défini dans roadmap.md est atteint ou non, et pourquoi.]
 
 ---
 

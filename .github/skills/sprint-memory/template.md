@@ -1,6 +1,6 @@
 # Sprint [N] — [nom]
 
-> **Fichier** : `/memories/sprint_[N]_[nom].md`  
+> **Fichier** : `/memories/sprints/sprint_[N]_[nom].md`  
 > **Usage** : Human-readable + contexte agent. Mis à jour tout au long du sprint.
 
 ---

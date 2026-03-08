@@ -1,6 +1,6 @@
 # Sprint Plan — Ticket Manager POC
 
-> Basé sur [SPECIFICATIONS.md](./SPECIFICATIONS.md) et [ARCHITECTURE.md](./ARCHITECTURE.md)
+> Basé sur [SPECIFICATIONS.md](../../docs/SPECIFICATIONS.md) et [ARCHITECTURE.md](../../docs/ARCHITECTURE.md)
 > Vélocité cible : **20 points par sprint** | Points estimés avec la suite de Fibonacci (1, 2, 3, 5, 8)
 
 ---

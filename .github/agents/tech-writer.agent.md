@@ -149,7 +149,7 @@ None / List them if any.
 ### Step 1: Read the Implementation
 Before writing a single word of documentation:
 - Read every changed file from the sprint (routes, validators, services, components)
-- Cross-reference with the sprint plan (`docs/SPRINT_PLAN.md`) for acceptance criteria
+- Cross-reference with the sprint plan (`.github/memories/roadmap.md` or `.github/memories/sprints/sprint_[N]_[nom].md`) for acceptance criteria
 - Note what changed vs. what already existed
 
 ### Step 2: Diff Against Existing Docs

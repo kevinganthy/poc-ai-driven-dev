@@ -12,13 +12,13 @@ Maintenir une **mémoire de sprint persistante et lisible** pour :
 ## Nommage des fichiers
 
 ```
-/memories/sprint_[N]_[nom].md
+/memories/sprints/sprint_[N]_[nom].md
 ```
 
 Exemples :
-- `/memories/sprint_1_auth-tickets.md`
-- `/memories/sprint_2_ui-crud.md`
-- `/memories/sprint_3_notifications.md`
+- `/memories/sprints/sprint_1_auth-tickets.md`
+- `/memories/sprints/sprint_2_ui-crud.md`
+- `/memories/sprints/sprint_3_notifications.md`
 
 ---
 
@@ -46,7 +46,7 @@ Exemples :
 3. Remplis le **Backlog** avec les tâches du plan
 4. Crée le fichier via le memory tool :
    ```
-   memory create /memories/sprint_[N]_[nom].md
+   memory create /memories/sprints/sprint_[N]_[nom].md
    ```
 
 ---
@@ -128,7 +128,7 @@ Règles :
 
 Pour trouver le sprint actif, utilise le memory tool :
 ```
-memory view /memories/
+memory view /memories/sprints/
 ```
 Puis lis le fichier `sprint_[N]_[nom].md` avec le statut 🟡 En cours.
 
