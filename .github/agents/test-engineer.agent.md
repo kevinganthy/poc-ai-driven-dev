@@ -109,4 +109,6 @@ Après l'écriture des tests, mets à jour `/memories/sprints/sprint_[N]_[slug].
 
 3. **Si Modified ou Rejected** : ajuste les tests et redemande le feedback.
 
+4. **Si Accepted** : applique le skill `agent-handover` pour proposer les agents pertinents pour la prochaine étape.
+
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

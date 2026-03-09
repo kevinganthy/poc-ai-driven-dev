@@ -228,4 +228,6 @@ Après la review, mets à jour `/memories/sprints/sprint_[N]_[slug].md` via le m
 
 3. **Si Modified ou Rejected** : documente les corrections à apporter et redemande le feedback.
 
+4. **Si Accepted** : applique le skill `agent-handover` pour proposer les agents pertinents pour la prochaine étape.
+
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

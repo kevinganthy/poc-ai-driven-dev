@@ -201,3 +201,5 @@ Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
 **Lesson**: ce qu'il faut renforcer ou éviter  
 ```
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.
+
+Puis applique le skill `agent-handover` pour proposer les agents pertinents pour la prochaine étape.

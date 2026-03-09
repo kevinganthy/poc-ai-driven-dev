@@ -209,7 +209,7 @@ product-owner → software-architect → scrum-master
 | `docker-compose` | `skills/docker/compose/` | Générer/valider un `compose.yml` sécurisé |
 | `docker-optimizer` | `skills/docker/optimizer/` | Optimiser les Dockerfiles (multi-stage, layer cache) |
 | `git-smart-commit` | `skills/git/smart-commit/` | Générer des messages de commit sémantiques |
-| `agent-handover` | `skills/workflow/handover/` | Transférer le contexte entre agents |
+| `agent-handover` | `skills/workflow/agent-handover/` | Transférer le contexte entre agents |
 | `feedback-loop` | `skills/feedback-loop/` | Enregistrer et exploiter les feedbacks utilisateur |
 | `sprint-memory` | `skills/sprint-memory/` | Créer et maintenir la mémoire de sprint (`sprint_[N]_[nom].md`) |
 | `sprint-init` | `skills/sprint-init/` | Initialiser le fichier mémoire d'un sprint (utilisé par le scrum-master) |

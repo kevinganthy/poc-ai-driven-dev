@@ -179,6 +179,6 @@ Ne jamais marquer une tâche ✅ à la création — seul le software-engineer m
 
 3. **Si Modified ou Rejected** : ajuste le plan et le fichier sprint en conséquence, puis redemande.
 
-4. **Si Accepted** : confirme que le fichier `/memories/sprints/sprint_[N]_[slug].md` est bien créé et que le software-engineer peut reprendre depuis la section **Contexte de reprise**.
+4. **Si Accepted** : applique le skill `agent-handover` pour proposer les agents pertinents pour la prochaine étape.
 
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

@@ -116,7 +116,7 @@ If after careful analysis you find that:
 
 3. **Si Modified ou Rejected** : Affiner, corriger et redemander du feedback.
 
-4. **Si Accepted** : Continuer vers la prochaine étape (scrum-master).
+4. **Si Accepted** : applique le skill `agent-handover` pour proposer les agents pertinents pour la prochaine étape.
 
 --- 
 

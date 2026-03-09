@@ -1,13 +1,43 @@
 ---
-name: handover
-description: Sauvegarde la réflexion de l'agent dans le dossier docs et prépare le relais pour l'agent suivant.
+name: agent-handover
+description: Assurer une transition fluide en proposant à l'utilisateur de lancer un autre agent pertinent pour la prochaine étape du travail, en transférant automatiquement le contexte nécessaire à partir de la mémoire.
 ---
 
-### Instructions pour l'agent
-Lorsque tu as terminé ta tâche (ex: analyse des exigences, conception de l'architecture, ...), suis ces étapes pour assurer une transition fluide vers l'agent suivant :
+## Quand utiliser ce skill
 
-1.  **Documente ta réflexion** : Rédige un résumé clair de ta démarche, des décisions prises, et des points d'attention pour l'agent suivant.
-2.  **Sauvegarde dans `docs/`** : Enregistre ce résumé dans un fichier structuré (ex: `docs/product-requirements.md`)
-3.  **Prépare le relais** : Indique explicitement quel agent doit être invoqué ensuite et pourquoi (ex: "Le `software-architect` doit lire ces exigences pour concevoir l'architecture").
-4.  **Vérifie la complétude** : Assure-toi que toutes les informations nécessaires pour l'agent suivant sont présentes et compréhensibles.
-5.  **Communique les risques** : Si tu as identifié des zones d'incertitude ou des choix fragiles, souligne-les pour que l'agent suivant puisse en tenir compte.
+À la fin de chaque tâche, avant de rendre la main à l'utilisateur.
+
+---
+
+## Transitions naturelles
+
+| Ce qui vient d'être livré | Agents à proposer |
+|---------------------------|-------------------|
+| Spécifications | `software-architect` |
+| Architecture | `scrum-master` |
+| Plan de sprints | `software-engineer` · `test-engineer` |
+| Implémentation | `test-engineer` · `code-reviewer` |
+| Tests | `code-reviewer` |
+| Review approuvée | `tech-writer` |
+| Review avec corrections | `software-engineer` |
+| Fin de sprint / doc | `scrum-master` · `product-owner` |
+| Debug | Agent interrompu · `test-engineer` |
+
+Agents transversaux (proposables à tout moment) : `debugger` · `devops-engineer` · `tech-debt-cleaner`
+
+---
+
+## Menu à afficher en fin de réponse
+
+Avant de rendre la main à l'utilisateur, pose la question via `vscode_askQuestions` :
+
+> *"Quelle est la prochaine étape ?*
+> 1. [emoji] `[agent]` — [action courte]
+> 2. [emoji] `[agent]` — [action courte]
+> 0. ✋ Arrêter ici
+> *Réponds par le numéro de ton choix."*
+
+Règles : max 3 options numérotées + l'option 0 (arrêt). Attendre la réponse avant d'agir.
+
+### Emojis par agent
+`product-owner` 📋 · `software-architect` 🏗️ · `scrum-master` 🗂️ · `software-engineer` 💻 · `test-engineer` 🧪 · `code-reviewer` 🔍 · `tech-writer` 📝 · `debugger` 🐛 · `devops-engineer` 🚀 · `tech-debt-cleaner` 🧹
