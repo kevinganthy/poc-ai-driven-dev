@@ -553,7 +553,7 @@ Imposé par le README (hors scope). Le token expire en 24h ; à l'expiration, l'
 - Refresh token
 - Gestion des utilisateurs dans l'UI
 - Pagination
-- Tests (traités par l'agent `test-engineer`)
+- Tests (traités par l'agent `tech-qa-automation-expert`)
 - Multi-catégories par ticket (contrainte `@unique` maintenue en Phase 2)
 
 ---

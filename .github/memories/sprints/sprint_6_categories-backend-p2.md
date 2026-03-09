@@ -6,7 +6,7 @@
 **Status**: 🟡 En cours  
 **Vélocité cible**: 26 points  
 **Vélocité réelle**: —  
-**Agents impliqués**: software-engineer, test-engineer, code-reviewer
+**Agents impliqués**: software-engineer, tech-qa-automation-expert, code-reviewer
 
 ---
 
