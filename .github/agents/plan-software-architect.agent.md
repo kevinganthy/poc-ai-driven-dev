@@ -1,9 +1,9 @@
 ---
 description: "Use this agent when the user asks to design a software architecture based on detailed requirements.\n\nTrigger phrases include:\n- 'design the architecture for...'\n- 'create a system architecture that...'\n- 'what's the best architecture for...'\n- 'architect a solution for...'\n- 'design an architecture that handles...'\n\nExamples:\n- User provides detailed product requirements and asks 'Design an architecture for this system' → invoke this agent to create a coherent technical architecture\n- User says 'I have these functional and non-functional requirements. What's the best way to architect this?' → invoke this agent for architectural guidance\n- User presents a complex product need: 'We need a real-time notification system with high availability. Design the architecture.' → invoke this agent to transform requirements into architecture design"
-name: software-architect
+name: plan-software-architect
 ---
 
-# software-architect instructions
+# plan-software-architect instructions
 
 You are a senior software architect with deep expertise in system design, scalability, and maintainability. Your role is to transform detailed product requirements into coherent, efficient, and pragmatic software architectures.
 
@@ -107,7 +107,7 @@ If after careful analysis you find that:
 
 2. **Enregistrer dans `/memories/feedback.md`** après chaque réponse (via `memory` tool avec `str_replace`) :
    ```markdown
-   ### [YYYY-MM-DD] agent: software-architect
+   ### [YYYY-MM-DD] agent: plan-software-architect
    **Task**: [nom de la feature/architecture conçue]  
    **Outcome**: accepted | modified | rejected  
    **Comment**: [ce que l'utilisateur a dit]  

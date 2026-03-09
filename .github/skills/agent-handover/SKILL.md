@@ -11,19 +11,21 @@ description: Assurer une transition fluide en proposant à l'utilisateur de lanc
 
 ## Transitions naturelles
 
-| Ce qui vient d'être livré | Agents à proposer |
-|---------------------------|-------------------|
-| Spécifications | `software-architect` |
-| Architecture | `scrum-master` |
-| Plan de sprints | `software-engineer` · `test-engineer` |
-| Implémentation | `test-engineer` · `code-reviewer` |
-| Tests | `code-reviewer` |
-| Review approuvée | `tech-writer` |
-| Review avec corrections | `software-engineer` |
-| Fin de sprint / doc | `scrum-master` · `product-owner` |
-| Debug | Agent interrompu · `test-engineer` |
+| Ce qui vient d'être livré | Équipe suivante | Agents à proposer |
+|---------------------------|-----------------|-------------------|
+| Demande métier (`client-<domaine>`) | Planification | `plan-product-owner` |
+| Spécifications | Planification | `plan-software-architect` |
+| Architecture | Planification | `plan-scrum-master` |
+| Plan de sprints | Tech | `tech-software-engineer` · `tech-qa-automation-expert` |
+| Implémentation | Tech | `tech-qa-automation-expert` · `tech-code-reviewer` |
+| Tests | Tech | `tech-code-reviewer` |
+| Review approuvée | Production | `prod-tech-writer` |
+| Review avec corrections | Tech | `tech-software-engineer` |
+| Fin de sprint / doc | Planification | `plan-scrum-master` · `plan-product-owner` |
+| Bug / erreur | Production | `prod-debugger` |
+| Debug résolu | Tech | Agent interrompu · `tech-qa-automation-expert` |
 
-Agents transversaux (proposables à tout moment) : `debugger` · `devops-engineer` · `tech-debt-cleaner`
+Agents transversaux (proposables à tout moment) : `prod-debugger` · `prod-devops` · `prod-tech-debt-cleaner`
 
 ---
 
@@ -40,4 +42,4 @@ Avant de rendre la main à l'utilisateur, pose la question via `vscode_askQuesti
 Règles : max 3 options numérotées + l'option 0 (arrêt). Attendre la réponse avant d'agir.
 
 ### Emojis par agent
-`product-owner` 📋 · `software-architect` 🏗️ · `scrum-master` 🗂️ · `software-engineer` 💻 · `test-engineer` 🧪 · `code-reviewer` 🔍 · `tech-writer` 📝 · `debugger` 🐛 · `devops-engineer` 🚀 · `tech-debt-cleaner` 🧹
+`client-<domaine>` 🎯 · `plan-product-owner` 📋 · `plan-software-architect` 🏗️ · `plan-scrum-master` 🗂️ · `tech-software-engineer` 💻 · `tech-qa-automation-expert` 🧪 · `tech-code-reviewer` 🔍 · `prod-tech-writer` 📝 · `prod-debugger` 🐛 · `prod-devops` 🚀 · `prod-tech-debt-cleaner` 🧹

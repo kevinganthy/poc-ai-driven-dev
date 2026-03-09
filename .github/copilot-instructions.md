@@ -176,28 +176,67 @@ Les conventions détaillées sont dans les fichiers d'instructions spécialisés
 
 ---
 
-## Agents disponibles
+## Équipes et agents
+
+### Team client
+
+Agents métier spécifiques au domaine, se comportant en qualité d'**experts métier**. Ils émettent les demandes vers la team planification.
+
+- **Nomenclature** : `client-<domaine>` (ex : `client-billing`, `client-support`, `client-hr`)
+- **Création** : instancier depuis le skill `client-template` (`.github/skills/client-template/SKILL.md`) pour chaque domaine métier
+- **Rôle** : formaliser les besoins métier et servir d'interlocuteur pour le `plan-product-owner`
+
+### Team planification
+
+> Traduit les besoins en tâches techniques planifiées.
 
 | Agent | Rôle | Quand l'invoquer |
 |-------|------|-----------------|
-| `product-owner` | Clarifier les besoins, écrire des user stories | Avant de concevoir une feature |
-| `software-architect` | Concevoir l'architecture | Après les specs |
-| `scrum-master` | Découper en sprints, estimer | Après l'architecture |
-| `software-engineer` | Implémenter le code | Après les specs + architecture |
-| `test-engineer` | Écrire et améliorer les tests | Après ou pendant l'implémentation |
-| `code-reviewer` | Revue sécurité, perf, durabilité | Avant de merger |
-| `debugger` | Diagnostiquer et corriger des bugs | Sur erreur ou comportement inattendu |
-| `devops-engineer` | Docker, CI/CD, infrastructure | Pour la config de déploiement |
-| `tech-debt-cleaner` | Supprimer code mort, migrer conventions, mettre à jour dépendances | Sur fichier legacy ou dette technique accumulée |
-| `tech-writer` | Mettre à jour README, générer OpenAPI, rédiger guides de migration, préparer la PR | En fin de sprint, après la code review |
+| `plan-product-owner` | Clarifier les besoins, écrire des user stories | En point d'entrée, avant toute conception |
+| `plan-software-architect` | Concevoir l'architecture | Après les specs du product owner |
+| `plan-scrum-master` | Découper en sprints, estimer, init sprint memory | Après l'architecture |
 
-product-owner → software-architect → scrum-master
-                                      ↙      ↘
-                          test-engineer  <->  software-engineer
-                                          ↓
-                                      code-reviewer
-                                          ↓
-                                      tech-writer
+### Team tech
+
+> Responsable de l'implémentation, des tests et de la revue de code.
+
+| Agent | Rôle | Quand l'invoquer |
+|-------|------|-----------------|
+| `tech-software-engineer` | Implémenter le code | Après les specs + architecture |
+| `tech-qa-automation-expert` | Écrire et améliorer les tests | Après ou pendant l'implémentation |
+| `tech-code-reviewer` | Revue sécurité, perf, durabilité | Avant de merger |
+
+### Team production
+
+> Gère la documentation, les retours, les bugs, la dette technique et le déploiement.
+
+| Agent | Rôle | Quand l'invoquer |
+|-------|------|-----------------|
+| `prod-tech-writer` | Mettre à jour README, générer OpenAPI, préparer la PR | En fin de sprint, après la code review |
+| `prod-debugger` | Diagnostiquer et corriger des bugs | Sur erreur ou comportement inattendu |
+| `prod-devops` | Docker, CI/CD, infrastructure | Pour la config de déploiement |
+| `prod-tech-debt-cleaner` | Supprimer code mort, migrer conventions, mettre à jour dépendances | Sur fichier legacy ou dette technique accumulée |
+
+### Workflow
+
+```
+client-<domaine>
+      ↓
+plan-product-owner → plan-software-architect → plan-scrum-master
+                                                       ↙      ↘
+                                   tech-qa-automation-expert  ↔  tech-software-engineer
+                                                       ↓
+                                               tech-code-reviewer
+                                                       ↓
+                                               prod-tech-writer
+```
+
+**Agents transversaux** (invocables à tout moment) : `prod-debugger` · `prod-devops` · `prod-tech-debt-cleaner`
+
+### Audit et feedback
+
+- Chaque étape du workflow est tracée dans `memories/sprints/sprint_X_[nom].md`
+- À chaque livrable, un feedback est demandé à l'humain et enregistré dans `memories/feedback.md`
 
 ---
 
@@ -212,8 +251,9 @@ product-owner → software-architect → scrum-master
 | `agent-handover` | `skills/workflow/agent-handover/` | Transférer le contexte entre agents |
 | `feedback-loop` | `skills/feedback-loop/` | Enregistrer et exploiter les feedbacks utilisateur |
 | `sprint-memory` | `skills/sprint-memory/` | Créer et maintenir la mémoire de sprint (`sprint_[N]_[nom].md`) |
-| `sprint-init` | `skills/sprint-init/` | Initialiser le fichier mémoire d'un sprint (utilisé par le scrum-master) |
-| `sprint-resume` | `skills/sprint-resume/` | Reprendre un sprint en cours (utilisé par software-engineer, test-engineer, code-reviewer) |
+| `sprint-init` | `skills/sprint-init/` | Initialiser le fichier mémoire d'un sprint (utilisé par le plan-scrum-master) |
+| `sprint-resume` | `skills/sprint-resume/` | Reprendre un sprint en cours (utilisé par tech-software-engineer, tech-qa-automation-expert, tech-code-reviewer) |
+| `client-template` | `skills/client-template/` | Créer un agent `client-<domaine>` et structurer une demande métier |
 
 ---
 
@@ -234,9 +274,9 @@ Chaque agent implémente un **feedback loop** pour améliorer la qualité des su
 Chaque sprint est tracé dans un fichier mémoire dédié pour permettre un **suivi humain rapide** et une **reprise de sprint par les agents** sans perte de contexte :
 
 - **Nommage** : `/memories/sprints/sprint_[N]_[nom].md` (ex : `sprint_2_crud-tickets.md`)
-- **Créé par** : `scrum-master` à la fin de la planification (depuis le template)
-- **Mis à jour par** : `software-engineer`, `test-engineer`, `code-reviewer`, `debugger` tout au long du sprint
-- **Clôturé par** : `tech-writer` avec rétrospective
+- **Créé par** : `plan-scrum-master` à la fin de la planification (depuis le template)
+- **Mis à jour par** : `tech-software-engineer`, `tech-qa-automation-expert`, `tech-code-reviewer`, `prod-debugger` tout au long du sprint
+- **Clôturé par** : `prod-tech-writer` avec rétrospective
 
 **Contenu** : métadonnées · objectif · backlog avec statuts · problèmes & blocages · décisions · artefacts · log d'activité · contexte de reprise pour agents · rétrospective
 

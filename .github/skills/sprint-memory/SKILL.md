@@ -20,18 +20,18 @@ Exemples :
 
 | Agent | Action |
 |-------|--------|
-| **scrum-master** | Crée le fichier en début de sprint (depuis le template) |
-| **software-engineer** | Met à jour les statuts du backlog + log d'activité pendant l'implémentation |
-| **test-engineer** | Met à jour les statuts des tâches de test + log d'activité |
-| **code-reviewer** | Ajoute les décisions prises + issues trouvées + log d'activité |
-| **debugger** | Ajoute les bugs dans "Problèmes & Blocages" + log d'activité |
-| **tech-writer** | Met à jour les artefacts produits, clôt le sprint, rédige la rétrospective |
+| **plan-scrum-master** | Crée le fichier en début de sprint (depuis le template) |
+| **tech-software-engineer** | Met à jour les statuts du backlog + log d'activité pendant l'implémentation |
+| **tech-qa-automation-expert** | Met à jour les statuts des tâches de test + log d'activité |
+| **tech-code-reviewer** | Ajoute les décisions prises + issues trouvées + log d'activité |
+| **prod-debugger** | Ajoute les bugs dans "Problèmes & Blocages" + log d'activité |
+| **prod-tech-writer** | Met à jour les artefacts produits, clôt le sprint, rédige la rétrospective |
 
 ---
 
 ## Protocole par agent
 
-### scrum-master — Initialisation du fichier
+### plan-scrum-master — Initialisation du fichier
 
 À la fin de la planification du sprint, crée le fichier mémoire :
 
@@ -45,7 +45,7 @@ Exemples :
 
 ---
 
-### software-engineer — Mise à jour en cours de sprint
+### tech-software-engineer — Mise à jour en cours de sprint
 
 Après chaque tâche terminée ou changement d'état :
 
@@ -53,42 +53,42 @@ Après chaque tâche terminée ou changement d'état :
 2. **Artefacts** : ajouter les fichiers créés/modifiés
 3. **Log d'activité** : ajouter une ligne (ordre inverse) :
    ```
-   - [YYYY-MM-DD] **software-engineer** — implémenté `route PUT /tickets/:id`, tests passent
+   - [YYYY-MM-DD] **tech-software-engineer** — implémenté `route PUT /tickets/:id`, tests passent
    ```
 4. **Contexte de reprise** : mettre à jour la prochaine tâche et les fichiers en cours
 
 ---
 
-### code-reviewer — Après une review
+### tech-code-reviewer — Après une review
 
 1. **Décisions prises** : noter les choix architecturaux validés
 2. **Problèmes & Blocages** (si bloquant) : ajouter les issues critiques
 3. **Log d'activité** :
    ```
-   - [YYYY-MM-DD] **code-reviewer** — review terminée, 2 issues 🟡 Medium corrigées, 1 ⚪ Info notée
+   - [YYYY-MM-DD] **tech-code-reviewer** — review terminée, 2 issues 🟡 Medium corrigées, 1 ⚪ Info notée
    ```
 
 ---
 
-### debugger — Lors d'un bug
+### prod-debugger — Lors d'un bug
 
 1. **Problèmes & Blocages** → section Ouverts : ajouter le bug
 2. Une fois résolu, déplacer vers Résolus avec la solution
 3. **Log d'activité** :
    ```
-   - [YYYY-MM-DD] **debugger** — bug résolu : req.user undefined dans middleware auth (manquait authenticate() dans la route)
+   - [YYYY-MM-DD] **prod-debugger** — bug résolu : req.user undefined dans middleware auth (manquait authenticate() dans la route)
    ```
 
 ---
 
-### tech-writer — Clôture du sprint
+### prod-tech-writer — Clôture du sprint
 
 1. **Métadonnées** : passer le statut à ✅ Terminé, remplir la date de clôture et la vélocité réelle
 2. **Artefacts** : compléter la liste des livrables
 3. **Rétrospective** : remplir les 3 sections
 4. **Log d'activité** :
    ```
-   - [YYYY-MM-DD] **tech-writer** — sprint clôturé, PR préparée, doc mise à jour
+   - [YYYY-MM-DD] **prod-tech-writer** — sprint clôturé, PR préparée, doc mise à jour
    ```
 
 ---
