@@ -1,9 +1,6 @@
-# Skill — feedback-loop
-
-## Objectif
-
-Mettre en place et utiliser un **feedback loop persistant** pour améliorer la qualité des suggestions de l'IA au fil du temps, en enregistrant les retours utilisateur dans la mémoire globale (`/memories/feedback.md`).
-
+---
+name: feedback-loop
+description: Mettre en place et utiliser un feedback loop persistant pour améliorer la qualité des suggestions de l'IA au fil du temps, en enregistrant les retours utilisateur dans la mémoire globale (`/memories/feedback.md`).
 ---
 
 ## Quand utiliser ce skill

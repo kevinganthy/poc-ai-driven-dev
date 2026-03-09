@@ -1,12 +1,6 @@
-# Skill — sprint-init
-
-## Objectif
-
-Permettre au **scrum-master** d'initialiser correctement le fichier mémoire d'un sprint à la fin de la planification, en garantissant :
-- Un numéro de sprint cohérent avec les sprints existants
-- Un backlog complet et fidèle au plan produit
-- Un fichier immédiatement exploitable par le software-engineer pour reprendre sans perte de contexte
-
+---
+name: sprint-init
+description: Permettre au scrum-master d'initialiser correctement le fichier mémoire d'un sprint à la fin de la planification, en garantissant un numéro de sprint cohérent, un backlog complet et un fichier exploitable par le software-engineer pour reprendre sans perte de contexte.
 ---
 
 ## Quand utiliser ce skill

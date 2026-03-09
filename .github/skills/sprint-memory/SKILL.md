@@ -1,12 +1,6 @@
-# Skill — sprint-memory
-
-## Objectif
-
-Maintenir une **mémoire de sprint persistante et lisible** pour :
-- Suivre l'avancement en un coup d'œil (pour l'humain)
-- Fournir un contexte complet permettant à un agent de reprendre un sprint en cours de route
-- Constituer un historique auditables de ce qui s'est passé sprint par sprint
-
+---
+name: sprint-memory
+description: Créer et maintenir une mémoire de sprint structurée pour suivre l'avancement, les décisions et les blocages.
 ---
 
 ## Nommage des fichiers

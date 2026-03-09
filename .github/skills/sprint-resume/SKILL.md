@@ -1,9 +1,6 @@
-# Skill — sprint-resume
-
-## Objectif
-
-Permettre à un agent (software-engineer, test-engineer, code-reviewer, debugger) de **reprendre un sprint en cours** sans demander de contexte supplémentaire à l'utilisateur, en reconstituant automatiquement l'état du travail depuis le fichier mémoire.
-
+---
+name: sprint-resume
+description: Permettre à un agent de reprendre un sprint en cours sans demander de contexte supplémentaire à l'utilisateur, en reconstituant automatiquement l'état du travail depuis le fichier mémoire.
 ---
 
 ## Quand utiliser ce skill

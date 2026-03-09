@@ -1,5 +1,5 @@
 ---
-name: smart-commit
+name: git-smart-commit
 description: Génère un message de commit détaillé incluant la réflexion de l'agent.
 ---
 ### Instructions
