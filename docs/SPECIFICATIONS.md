@@ -34,6 +34,17 @@ Application de gestion de tickets (POC) : workflow full-stack Node.js / Svelte /
 - **US-15** — Modifier la catégorie d'un ticket (mêmes droits que titre/description : owner sur ses tickets, admin sur tous).
 - **US-16** — Voir la catégorie d'un ticket sous forme de tag dans la liste et le formulaire d'édition.
 
+### Gestion des catégories (Phase 2)
+- **US-19** — En tant qu'admin, créer une catégorie racine ou sous-catégorie (parent optionnel) afin d'organiser les catégories hiérarchiquement.
+- **US-20** — En tant qu'admin, renommer une catégorie existante.
+- **US-21** — En tant qu'admin, déplacer une catégorie (changer son parent) afin de réorganiser l'arbre.
+- **US-22** — En tant qu'admin, archiver une catégorie (soft delete) avec cascade automatique sur tous ses descendants afin de retirer des catégories obsolètes sans perdre l'historique des tickets.
+- **US-23** — En tant qu'admin, restaurer une catégorie archivée (la catégorie + tous ses ancêtres sont réactivés) depuis l'onglet Archives.
+- **US-24** — En tant qu'utilisateur/admin, assigner une catégorie à un ticket via un champ de recherche autocomplete (affichant le chemin complet : Bug > UI Bug).
+- **US-25** — En tant qu'utilisateur/admin, voir le chemin complet de la catégorie (breadcrumb) sur la carte ticket (ex. Bug > UI Bug).
+- **US-26** — En tant qu'utilisateur/admin, filtrer les tickets par une catégorie parente et voir tous les tickets de ses sous-catégories inclus dans les résultats.
+- **US-27** — En tant qu'admin, accéder à une page dédiée `/admin/categories` pour gérer l'arbre de catégories (créer, renommer, déplacer, archiver, restaurer).
+
 ---
 
 ## Specifications techniques
@@ -71,6 +82,58 @@ Application de gestion de tickets (POC) : workflow full-stack Node.js / Svelte /
 - Contrainte `@unique` sur `ticketId` : garantit qu'un ticket ne peut avoir qu'une seule catégorie en Phase 1.
 - Structure anticipant la Phase 2 (suppression de `@unique` pour passer en many-to-many).
 
+### Entite Category (Phase 2 — gestion dynamique + hiérarchie)
+
+| Champ | Type | Contraintes |
+|---|---|---|
+| `id` | String (cuid) | PK, auto-généré — **migration depuis Int autoincrement** |
+| `name` | String | Requis, 2–50 caractères, **globalement unique (case-insensitive)** |
+| `parentId` | String? | FK Category.id — null = catégorie racine |
+| `archivedAt` | DateTime? | null = active, non-null = archivée (soft delete) |
+| `createdAt` | DateTime | Auto |
+| `updatedAt` | DateTime | Auto |
+
+Self-relation Prisma nommée `CategoryTree` :
+```prisma
+model Category {
+  id         String     @id @default(cuid())
+  name       String     @unique
+  parent     Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  parentId   String?
+  children   Category[] @relation("CategoryTree")
+  archivedAt DateTime?
+  ticketCategories TicketCategory[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+```
+
+**Règles métier :**
+- Profondeur illimitée (arbre complet).
+- Un ticket peut être assigné à n'importe quel nœud (parent ou feuille).
+- Archivage = soft delete, cascade automatique sur **tous les descendants**.
+- Restauration d'une catégorie = réactivation + réactivation de **tous les ancêtres**.
+- Les descendants cascade-archivés **ne sont pas** auto-restaurés (restauration individuelle).
+- Interdiction de créer une référence circulaire (un nœud ne peut pas devenir son propre ancêtre).
+- Un ticket archivé ne disparaît **pas** des filtres — il reste visible marqué `archivée`.
+- **Les catégories archivées ne sont plus sélectionnables** dans les formulaires ticket.
+
+### Entite TicketCategory — Phase 2 (inchangée, sauf type de `categoryId`)
+
+| Champ | Type | Contraintes |
+|---|---|---|
+| `ticketId` | String | FK Ticket.id, `@unique` — 1 catégorie max par ticket |
+| `categoryId` | String | FK Category.id — **migration depuis Int** |
+
+- La contrainte `@unique` sur `ticketId` est **maintenue** (multi-catégories hors scope).
+- En cas d'archivage d'une catégorie, les `TicketCategory` existants sont **conservés** (pas de cascade delete).
+
+### Migration des données
+
+- Les 7 catégories existantes (Bug, Feature, Improvement, Question, Documentation, Security, Performance) sont conservées comme catégories racines (`parentId = null`).
+- Leurs IDs passent de `Int autoincrement` à `String cuid` — migration Prisma requise.
+- Les liaisons `TicketCategory.categoryId` sont migrées en conséquence.
+
 ### Entite User
 
 | Champ | Type | Contraintes |
@@ -106,6 +169,56 @@ Application de gestion de tickets (POC) : workflow full-stack Node.js / Svelte /
 |---|---|---|---|
 | GET | `/categories` | Oui | Lister les catégories disponibles (pour alimenter les selects UI) |
 
+### Endpoints API — catégories (Phase 2)
+
+| Méthode | Route | Auth | Rôle | Description |
+|---|---|---|---|---|
+| GET | `/categories` | Oui | any | Arbre des catégories actives (nested tree) |
+| GET | `/categories?includeArchived=true` | Oui | admin | Arbre complet incluant les catégories archivées |
+| POST | `/categories` | Oui | admin | Créer une catégorie (racine ou enfant) |
+| PUT | `/categories/:id` | Oui | admin | Modifier le nom et/ou le parent |
+| DELETE | `/categories/:id` | Oui | admin | Archiver (soft delete) + cascade descendants |
+| POST | `/categories/:id/restore` | Oui | admin | Restaurer + réactiver tous les ancêtres |
+
+**Format de réponse `GET /categories` :**
+```json
+[
+  {
+    "id": "cuid1",
+    "name": "Bug",
+    "parentId": null,
+    "archivedAt": null,
+    "children": [
+      {
+        "id": "cuid2",
+        "name": "UI Bug",
+        "parentId": "cuid1",
+        "archivedAt": null,
+        "children": []
+      }
+    ]
+  }
+]
+```
+
+**Corps `POST /categories` :**
+```json
+{ "name": "UI Bug", "parentId": "cuid1" }
+```
+`parentId` est optionnel (null = catégorie racine).
+
+**Corps `PUT /categories/:id` :**
+```json
+{ "name": "Bug Reports", "parentId": "newParentId" }
+```
+Tous les champs sont optionnels (PATCH sémantique via PUT).
+
+**Règles de validation :**
+- `name` : 2–50 caractères, unique globalement (case-insensitive) → 409 si doublon
+- `parentId` doit référencer une catégorie active (non archivée) → 400 si archivée ou inexistante
+- Interdiction de référence circulaire (`parentId` = self ou descendant) → 400
+- Non-admin → 403 sur toutes les routes d'écriture
+
 Modification de l'endpoint existant :
 
 | Méthode | Route | Changement |
@@ -114,6 +227,12 @@ Modification de l'endpoint existant :
 | PUT | `/tickets/:id` | Accepte `categoryId` optionnel (passer `null` pour retirer la catégorie) |
 | GET | `/tickets` | Accepte `categories` : liste de noms séparés par virgule (ex. `?categories=Bug,Feature`) |
 
+**Évolution Phase 2 :**
+
+| Méthode | Route | Changement |
+|---|---|---|
+| GET | `/tickets` | Paramètre `categories` renommé `categoryIds` : liste d'IDs cuid séparés par virgule (ex. `?categoryIds=cuid1,cuid2`) — chaque ID inclut automatiquement tous ses descendants |
+
 ### Filtrage combiné — règles
 
 - `GET /tickets?status=open&categories=Bug,Feature`
@@ -121,6 +240,16 @@ Modification de l'endpoint existant :
 - `categories` : un ou plusieurs noms de catégories séparés par virgule.
 - `status` et `categories` sont chacun optionnels (comportement existant préservé si `categories` absent).
 - Les tickets **sans catégorie** n'apparaissent pas dans les résultats quand un filtre catégorie est actif.
+
+**Filtrage Phase 2 — règles étendues :**
+
+- `GET /tickets?status=open&categoryIds=cuid1,cuid2`
+- `categoryIds` remplace `categories` (IDs à la place des noms).
+- **Inclusion des descendants** : sélectionner l'ID d'une catégorie parente inclut automatiquement tous les tickets assignés à ses sous-catégories (requête récursive backend).
+- **OU logique** entre les IDs sélectionnés (chacun avec ses descendants).
+- **ET logique** avec `status` si les deux filtres sont présents.
+- Les tickets sans catégorie n'apparaissent pas quand `categoryIds` est actif.
+- Les catégories archivées peuvent être utilisées comme filtre (pour retrouver d'anciens tickets).
 
 ---
 
@@ -135,6 +264,7 @@ Modification de l'endpoint existant :
 | `/tickets` | Authentifié | Liste + filtre par statut **+ filtre par catégorie(s)** |
 | `/tickets/new` | Authentifié | Création **+ sélecteur de catégorie optionnel** |
 | `/tickets/:id/edit` | Authentifié | Modification **+ sélecteur de catégorie** |
+| `/admin/categories` | Admin uniquement | Gestion de l'arbre de catégories (Phase 2) |
 
 ### Comportements UI
 - Redirection `/login` si non authentifié
@@ -144,6 +274,32 @@ Modification de l'endpoint existant :
 - **Sélecteur de catégorie** dans les formulaires création et édition (champ optionnel, option vide = "Aucune")
 - Messages d'erreur inline, confirmation de succès
 - Pas de pagination
+
+### Comportements UI — Phase 2
+
+**Autocomplete catégorie (ticket form) :**
+- Champ texte avec liste déroulante dynamique.
+- Filtrage en temps réel — cherche dans le nom ET dans le chemin complet (ex: taper "ux" trouve "Bug > UI Bug").
+- Chaque résultat affiche le chemin complet : `Bug > UI Bug`.
+- Seules les catégories **actives** (non archivées) sont proposées.
+- Option "Aucune" pour retirer la catégorie du ticket.
+
+**Tag catégorie sur les cartes ticket :**
+- Affiche le **chemin complet** (breadcrumb) : `Bug > UI Bug > Mobile`.
+- Si la catégorie est archivée, afficher en style grisé avec mention `(archivée)`.
+
+**Filtre catégorie sur la liste des tickets :**
+- Filtre multi-sélection : boutons représentant les catégories **racines actives**.
+- Cliquer sur un parent filtre par lui **ET ses descendants** (inclusif).
+- Les catégories archivées restent visibles dans le filtre, marquées `archivée`.
+
+**Page `/admin/categories` :**
+- Vue en arbre des catégories actives avec indentation visuelle.
+- Par nœud : bouton **Ajouter sous-catégorie**, **Renommer**, **Déplacer** (sélecteur de nouveau parent), **Archiver**.
+- Bouton **Nouvelle catégorie racine** en haut de page.
+- Onglet **Archives** : liste des catégories archivées avec bouton **Restaurer**.
+- Confirmation requise avant archivage (message : "Archiver X supprimera aussi ses N sous-catégories. Confirmer ?").
+- Accès réservé à l'admin — redirection 403/login sinon.
 
 ---
 
@@ -174,6 +330,31 @@ Modification de l'endpoint existant :
 - [ ] **La catégorie apparaît comme tag dans la liste des tickets**
 - [ ] **Le sélecteur de catégorie est présent dans les formulaires création et édition**
 
+**Phase 2 — Gestion des catégories :**
+- [ ] Non-admin ne peut pas accéder aux routes d'écriture de `/categories` → 403
+- [ ] Créer une catégorie racine : `POST /categories {name: "Bug Reports"}` → 201 avec id cuid
+- [ ] Créer une sous-catégorie : `POST /categories {name: "UI Bug", parentId: "..."}` → 201
+- [ ] Nom vide ou > 50 chars → 400
+- [ ] Nom déjà existant (case-insensitive) → 409
+- [ ] `parentId` référençant une catégorie archivée → 400
+- [ ] Référence circulaire (`parentId` = self ou descendant) → 400
+- [ ] Renommer : `PUT /categories/:id {name: "Bug Reports"}` → 200
+- [ ] Déplacer : `PUT /categories/:id {parentId: "newParentId"}` → 200
+- [ ] Archiver une catégorie sans enfants : `DELETE /categories/:id` → 200, `archivedAt` non null
+- [ ] Archiver une catégorie avec N descendants → tous archivés en cascade
+- [ ] Les catégories archivées n'apparaissent **pas** dans l'autocomplete du formulaire ticket
+- [ ] Les catégories archivées apparaissent dans le filtre de la liste tickets (marquées "archivée")
+- [ ] Restaurer : `POST /categories/:id/restore` → 200, `archivedAt` = null
+- [ ] Restaurer une sous-catégorie réactive aussi tous ses ancêtres
+- [ ] `GET /categories` retourne un arbre nested (active uniquement par défaut)
+- [ ] `GET /categories?includeArchived=true` (admin) retourne l'arbre complet
+- [ ] Filtre `?categoryIds=cuid1` inclut les tickets des sous-catégories de cuid1
+- [ ] La catégorie s'affiche en breadcrumb complet sur la carte ticket (Bug > UI Bug)
+- [ ] L'autocomplete filtre en temps réel sur le nom ET le chemin complet
+- [ ] Confirmation requise avant archivage d'une catégorie avec sous-catégories
+- [ ] Les 7 catégories existantes migrées comme racines (parentId = null)
+- [ ] Accès `/admin/categories` refusé aux non-admins → redirection login
+
 ---
 
 ## Hors scope
@@ -183,16 +364,32 @@ Modification de l'endpoint existant :
 - Pagination
 - Notifications temps réel
 - Pièces jointes
-- Création / modification / suppression de catégories (Phase 1 : liste fixe seedée)
-- Multi-catégories par ticket (Phase 2)
+- Multi-catégories par ticket (hors scope définitif — contrainte `@unique` maintenue)
+- Drag & drop pour réorganiser l'arbre de catégories
+- Import/export de la hiérarchie de catégories
+- Couleurs ou icônes personnalisées par catégorie
 
 ---
 
 ## Roadmap catégories
 
-| Phase | Description |
-|---|---|
-| **Phase 1** (actuelle) | Catégories prédéfinies, 1 par ticket via table de liaison, filtre multi-sélection |
-| **Phase 2** | Catégories libres (CRUD admin), plusieurs catégories par ticket (suppression de la contrainte `@unique` sur `TicketCategory.ticketId`) |
+| Phase | Statut | Description |
+|---|---|---|
+| **Phase 1** | ✅ Livré | Catégories prédéfinies (7 valeurs seedées), 1 par ticket via table de liaison, filtre multi-sélection |
+| **Phase 2** | 🚧 En cours | CRUD admin, hiérarchie illimitée (self-relation), soft delete avec cascade, autocomplete, breadcrumb |
+
 - Priorité / date d'échéance
 - Environnement de production distinct
+
+---
+
+## Assumptions Phase 2
+
+> À valider avec le client avant démarrage du sprint.
+
+1. La migration `Int → String (cuid)` sur `Category.id` est acceptée (nécessite un reset des données en dev ou une migration manuelle).
+2. Les 7 catégories actuellement seedées restent actives et deviennent des catégories racines — aucune n'est supprimée.
+3. L'autocomplete côté frontend charge l'arbre complet au chargement de la page (pas de recherche server-side) — acceptable pour un POC avec < 1000 catégories.
+4. Le filtre "descendants inclus" est calculé par le backend via une requête récursive (CTE PostgreSQL ou résolution applicative).
+5. Il n'y a pas de limite de profondeur imposée par le système — à documenter dans l'UI si l'arbre devient très profond.
+6. L'onglet Archives de la page admin affiche une liste plate (pas un arbre) des catégories archivées.

@@ -232,6 +232,54 @@
 
 ---
 
+### Sprint 6 — Backend Phase 2 (catégories hiérarchiques)
+**Goal** : L'API catégories est complète — CRUD admin, arbre nested JSON, archivage cascade, restauration remontante, filtre tickets par IDs avec expansion des descendants.
+
+| # | Tâche | SP |
+|---|-------|----|
+| 37 | Migrer schema Prisma : Category (cuid + parentId + archivedAt + updatedAt) + TicketCategory.categoryId String | 3 |
+| 38 | seed.ts : 7 catégories racines cuid, upsert idempotent | 1 |
+| 39 | Validators Zod : CreateCategorySchema + UpdateCategorySchema | 2 |
+| 40 | `category.service` : getTree() + buildTree() in-memory O(n) | 2 |
+| 41 | `category.service` : getDescendantIds() via CTE récursive PostgreSQL | 3 |
+| 42 | `category.service` : create() + update() + checkCircularReference() | 5 |
+| 43 | `category.service` : archiveWithDescendants() + restoreWithAncestors() via CTEs | 5 |
+| 44 | `categories.ts` routes : GET étendu + POST + PUT + DELETE + POST /:id/restore | 3 |
+| 45 | `ticket.service` : paramètre categoryIds (cuid) + expansion descendants | 2 |
+
+**Total : 26 points** · Fichier mémoire : `.github/memories/sprints/sprint_6_categories-backend-p2.md`
+
+---
+
+### Sprint 7 — Frontend Phase 2 Core
+**Goal** : Le ticket form utilise l'autocomplete avec breadcrumb, le filtre utilise les IDs cuid avec expansion des descendants.
+
+| # | Tâche | SP |
+|---|-------|----|
+| 46 | `types.ts` : interfaces CategoryNode + FlatCategoryWithPath | 1 |
+| 47 | `categories.ts` API frontend : create, update, archive, restore | 2 |
+| 48 | `categories.svelte.ts` store : cache arbre + getPath() + getRoots() + getActiveCategories() | 5 |
+| 49 | `CategoryAutocomplete.svelte` : autocomplete client-side sur nom + chemin complet | 5 |
+| 50 | `TicketForm.svelte` : CategorySelect → CategoryAutocomplete | 2 |
+| 51 | `TicketCard.svelte` : tag simple → breadcrumb calculé depuis store | 2 |
+| 52 | `CategoryFilter.svelte` : racines actives + IDs cuid | 2 |
+| 53 | `tickets/+page.svelte` : passer categoryIds (IDs cuid) au lieu de noms | 1 |
+
+**Total : 20 points** · Fichier mémoire : `.github/memories/sprints/sprint_7_categories-frontend-p2.md` (à créer)
+
+---
+
+### Sprint 8 — Admin UI
+**Goal** : Un admin peut gérer l'arbre de catégories depuis /admin/categories.
+
+| # | Tâche | SP |
+|---|-------|----|
+| 54 | Page `/admin/categories` : arbre interactif + onglet Archives + confirmation archivage | 8 |
+
+**Total : 8 points** · Fichier mémoire : `.github/memories/sprints/sprint_8_admin-categories.md` (à créer)
+
+---
+
 ## Handoff — Sprints 1–4 (MVP core)
 
 ### Sprint de démarrage : **Sprint 1**
