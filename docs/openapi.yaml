@@ -1,0 +1,540 @@
+openapi: 3.0.3
+info:
+  title: Ticket Manager API
+  description: REST API for ticket management with JWT authentication and RBAC.
+  version: 1.1.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+
+tags:
+  - name: auth
+    description: Authentication
+  - name: categories
+    description: Ticket categories
+  - name: tickets
+    description: Ticket management
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Unauthorized
+
+    ValidationError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Validation error
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              message:
+                type: string
+
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bug
+
+    CategoryRef:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bug
+
+    TicketStatus:
+      type: string
+      enum: [open, in-progress, closed]
+      example: open
+
+    Ticket:
+      type: object
+      required: [id, title, description, status, authorId, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: clx1a2b3c0000defgh
+        title:
+          type: string
+          example: Login page broken
+        description:
+          type: string
+          example: The login page shows a 500 error on submit.
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+        authorId:
+          type: string
+          example: clx0user0000abc
+        category:
+          $ref: '#/components/schemas/CategoryRef'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AuthResponse:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          description: JWT valid for 24 hours
+
+paths:
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Health check
+      tags: []
+      responses:
+        '200':
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /auth/register:
+    post:
+      operationId: register
+      summary: Create a user account
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: MyP@ssw0rd
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  role:
+                    type: string
+                    example: user
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      operationId: login
+      summary: Authenticate and get a JWT
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: MyP@ssw0rd
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /categories:
+    get:
+      operationId: listCategories
+      summary: List all available categories
+      tags: [categories]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+              example:
+                - id: 1
+                  name: Bug
+                - id: 2
+                  name: Feature
+                - id: 3
+                  name: Improvement
+                - id: 4
+                  name: Question
+                - id: 5
+                  name: Documentation
+                - id: 6
+                  name: Security
+                - id: 7
+                  name: Performance
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tickets:
+    get:
+      operationId: listTickets
+      summary: List tickets
+      description: |
+        Returns tickets filtered by role:
+        - **user**: only their own tickets
+        - **admin**: all tickets
+
+        Supports optional `status` and `categories` query filters.
+      tags: [tickets]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/TicketStatus'
+          description: Filter by ticket status
+        - name: categories
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "1,3"
+          description: Comma-separated category IDs (OR logic). Example — `?categories=1,3`
+      responses:
+        '200':
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: createTicket
+      summary: Create a ticket
+      tags: [tickets]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description]
+              properties:
+                title:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                  example: Login page broken
+                description:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+                  example: The login page shows a 500 error on submit.
+                categoryId:
+                  type: integer
+                  minimum: 1
+                  description: Optional category ID (from GET /categories)
+                  example: 1
+      responses:
+        '201':
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tickets/{id}:
+    get:
+      operationId: getTicket
+      summary: Get a ticket by ID
+      tags: [tickets]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ticket details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden — not the owner and not admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      operationId: updateTicket
+      summary: Update a ticket
+      description: |
+        Owners can update `title`, `description`, and `categoryId`.
+        Only **admins** can update `status`; a 403 is returned immediately if a user sends `status`.
+      tags: [tickets]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                description:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+                status:
+                  $ref: '#/components/schemas/TicketStatus'
+                  description: Admin only
+                categoryId:
+                  type: integer
+                  minimum: 1
+                  description: Optional category ID; omit to leave unchanged
+      responses:
+        '200':
+          description: Updated ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteTicket
+      summary: Delete a ticket
+      tags: [tickets]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Ticket deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

@@ -18,14 +18,33 @@ model User {
 }
 
 model Ticket {
-  id          String       @id @default(uuid())
-  title       String
-  description String
-  status      TicketStatus @default(open)
-  author      User         @relation(fields: [authorId], references: [id])
-  authorId    String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String          @id @default(uuid())
+  title          String
+  description    String
+  status         TicketStatus    @default(open)
+  author         User            @relation(fields: [authorId], references: [id])
+  authorId       String
+  ticketCategory TicketCategory? @relation("TicketToCategory")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Category {
+  id               Int            @id @default(autoincrement())
+  name             String         @unique
+  ticketCategories TicketCategory[] @relation("CategoryToTicket")
+  createdAt        DateTime       @default(now())
+}
+
+model TicketCategory {
+  id         String   @id @default(uuid())
+  ticket     Ticket   @relation("TicketToCategory", fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId   String   @unique
+  category   Category @relation("CategoryToTicket", fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int
+  createdAt  DateTime @default(now())
+
+  @@unique([ticketId, categoryId])
 }
 
 enum Role {

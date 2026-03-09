@@ -103,4 +103,44 @@ describe('TicketForm', () => {
 		expect(btn).toBeDisabled();
 		expect(btn).toHaveTextContent('Enregistrement...');
 	});
+
+	it('renders the category select field', () => {
+		render(TicketForm, { isAdmin: false, loading: false, onsubmit: vi.fn() });
+
+		expect(screen.getByLabelText('Catégorie')).toBeInTheDocument();
+	});
+
+	it('includes categoryId in submit data when a category is selected', async () => {
+		const mockSubmit = vi.fn();
+		const user = userEvent.setup();
+		render(TicketForm, { isAdmin: false, loading: false, onsubmit: mockSubmit });
+
+		await user.type(screen.getByLabelText('Titre'), 'Mon ticket');
+		await user.type(screen.getByLabelText('Description'), 'Description suffisamment longue.');
+		await user.selectOptions(screen.getByLabelText('Catégorie'), '1'); // Bug = id 1
+
+		await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
+
+		expect(mockSubmit).toHaveBeenCalledWith({
+			title: 'Mon ticket',
+			description: 'Description suffisamment longue.',
+			categoryId: 1
+		});
+	});
+
+	it('does not include categoryId when no category is selected', async () => {
+		const mockSubmit = vi.fn();
+		const user = userEvent.setup();
+		render(TicketForm, { isAdmin: false, loading: false, onsubmit: mockSubmit });
+
+		await user.type(screen.getByLabelText('Titre'), 'Mon ticket');
+		await user.type(screen.getByLabelText('Description'), 'Description suffisamment longue.');
+		await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
+
+		expect(mockSubmit).toHaveBeenCalledWith({
+			title: 'Mon ticket',
+			description: 'Description suffisamment longue.'
+		});
+		expect(mockSubmit.mock.calls[0][0]).not.toHaveProperty('categoryId');
+	});
 });

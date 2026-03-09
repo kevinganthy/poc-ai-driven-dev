@@ -3,6 +3,7 @@ import cors from 'cors';
 import { env } from './config/env';
 import authRouter from './routes/auth';
 import ticketsRouter from './routes/tickets';
+import categoriesRouter from './routes/categories';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/tickets', ticketsRouter);
+app.use('/categories', categoriesRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(env.PORT, () => {

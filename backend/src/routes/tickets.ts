@@ -11,7 +11,11 @@ router.use(authenticate);
 
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const tickets = await ticketService.getAll(req.user as AuthUser, req.query.status as string | undefined);
+    const tickets = await ticketService.getAll(
+      req.user as AuthUser,
+      req.query.status as string | undefined,
+      req.query.categories as string | undefined
+    );
     res.json(tickets);
   } catch (err: any) {
     res.status(err.status ?? 500).json({ error: err.message ?? 'Internal server error' });

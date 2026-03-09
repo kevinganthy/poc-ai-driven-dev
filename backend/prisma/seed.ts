@@ -3,6 +3,16 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+const predefinedCategories = [
+  'Bug',
+  'Feature',
+  'Improvement',
+  'Question',
+  'Documentation',
+  'Security',
+  'Performance',
+];
+
 async function main() {
   const email = process.env.ADMIN_EMAIL ?? 'admin@example.com';
   const plainPassword = process.env.ADMIN_PASSWORD ?? 'Admin1234!';
@@ -19,6 +29,17 @@ async function main() {
   });
 
   console.log(`Admin user seeded: ${email}`);
+
+  // Seed predefined categories (idempotent via upsert)
+  for (const categoryName of predefinedCategories) {
+    await prisma.category.upsert({
+      where: { name: categoryName },
+      update: {},
+      create: { name: categoryName },
+    });
+  }
+
+  console.log(`${predefinedCategories.length} categories seeded`);
 }
 
 main()

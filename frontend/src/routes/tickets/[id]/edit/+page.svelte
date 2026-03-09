@@ -14,7 +14,7 @@
 	let error = $state('');
 	let isAdmin = $state(false);
 
-	async function handleSubmit(data: { title: string; description: string; status?: string }) {
+	async function handleSubmit(data: { title: string; description: string; status?: string; categoryId?: number }) {
 		const token = getToken();
 		if (!token || !ticket) return;
 		submitLoading = true;
@@ -43,7 +43,7 @@
 		isAdmin = payload?.role === 'admin';
 		loading = true;
 		try {
-			ticket = await getOne(token, $page.params.id);
+			ticket = await getOne(token, $page.params.id as string);
 		} catch (err: unknown) {
 			const e = err as { error?: string };
 			error = e.error ?? 'Ticket introuvable.';

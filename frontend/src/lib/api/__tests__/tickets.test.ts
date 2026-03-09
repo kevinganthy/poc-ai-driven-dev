@@ -147,3 +147,38 @@ describe('remove()', () => {
 		await expect(remove(TOKEN, 't2')).rejects.toMatchObject({ status: 403 });
 	});
 });
+
+describe('getAll() — category filter', () => {
+	it('appends ?categories=1,3 when categories array is provided', async () => {
+		mockFetch.mockReturnValue(mockResponse([]));
+
+		await getAll(TOKEN, undefined, [1, 3]);
+
+		expect(mockFetch).toHaveBeenCalledWith(
+			'http://localhost:3000/tickets?categories=1,3',
+			expect.any(Object)
+		);
+	});
+
+	it('appends both status and categories params when both are provided', async () => {
+		mockFetch.mockReturnValue(mockResponse([]));
+
+		await getAll(TOKEN, 'open', [2]);
+
+		expect(mockFetch).toHaveBeenCalledWith(
+			'http://localhost:3000/tickets?status=open&categories=2',
+			expect.any(Object)
+		);
+	});
+
+	it('does not append categories param when array is empty', async () => {
+		mockFetch.mockReturnValue(mockResponse([]));
+
+		await getAll(TOKEN, undefined, []);
+
+		expect(mockFetch).toHaveBeenCalledWith(
+			'http://localhost:3000/tickets',
+			expect.any(Object)
+		);
+	});
+});

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import type { Ticket } from '$lib/types.ts';
+	import CategorySelect from './CategorySelect.svelte';
 
-	type SubmitData = { title: string; description: string; status?: string };
+	type SubmitData = { title: string; description: string; status?: string; categoryId?: number };
 
 	interface Props {
 		initialValues?: Partial<Ticket>;
@@ -17,6 +18,7 @@
 	let title = $state(untrack(() => initialValues?.title ?? ''));
 	let description = $state(untrack(() => initialValues?.description ?? ''));
 	let status = $state(untrack(() => initialValues?.status ?? 'open'));
+	let categoryId = $state(untrack(() => (initialValues as any)?.category?.id as number | undefined));
 	let titleError = $state('');
 	let descriptionError = $state('');
 
@@ -40,6 +42,7 @@
 		if (!validate()) return;
 		const data: SubmitData = { title, description };
 		if (isAdmin) data.status = status;
+		if (categoryId !== undefined) data.categoryId = categoryId;
 		onsubmit(data);
 	}
 </script>
@@ -59,6 +62,10 @@
 	{#if descriptionError}
 		<p class="error">{descriptionError}</p>
 	{/if}
+	<label>
+		Catégorie
+		<CategorySelect value={categoryId} onchange={(v) => (categoryId = v)} />
+	</label>
 	{#if isAdmin}
 		<label>
 			Statut

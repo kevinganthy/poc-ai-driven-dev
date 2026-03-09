@@ -6,4 +6,8 @@ export interface Ticket {
 	authorId: string;
 	createdAt: string;
 	updatedAt: string;
+	category?: {
+		id: number;
+		name: string;
+	} | null;
 }

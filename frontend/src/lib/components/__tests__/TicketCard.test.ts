@@ -68,4 +68,19 @@ describe('TicketCard', () => {
 
 		expect(screen.getByText('In Progress')).toBeInTheDocument();
 	});
+
+	it('displays the category tag when ticket has a category', () => {
+		const ticketWithCategory = { ...ticket, category: { id: 1, name: 'Bug' } };
+		render(TicketCard, { ticket: ticketWithCategory, currentUserId: 'u1', isAdmin: false, ondelete: vi.fn() });
+
+		expect(screen.getByText('Bug')).toBeInTheDocument();
+	});
+
+	it('does not render a category tag when ticket has no category', () => {
+		const ticketNoCategory = { ...ticket, category: null };
+		render(TicketCard, { ticket: ticketNoCategory, currentUserId: 'u1', isAdmin: false, ondelete: vi.fn() });
+
+		// The title "Bug critique" still renders but no category tag "Bug"
+		expect(screen.queryByText('Bug')).not.toBeInTheDocument();
+	});
 });

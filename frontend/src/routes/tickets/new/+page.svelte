@@ -10,7 +10,7 @@
 	let error = $state('');
 	let isAdmin = $state(false);
 
-	async function handleSubmit(data: { title: string; description: string; status?: string }) {
+	async function handleSubmit(data: { title: string; description: string; status?: string; categoryId?: number }) {
 		const token = getToken();
 		if (!token) {
 			goto('/login');

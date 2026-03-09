@@ -7,8 +7,12 @@ function authHeaders(token: string): Record<string, string> {
 	};
 }
 
-export async function getAll(token: string, status?: string) {
-	const url = status ? `${API}/tickets?status=${encodeURIComponent(status)}` : `${API}/tickets`;
+export async function getAll(token: string, status?: string, categories?: number[]) {
+	let url = `${API}/tickets`;
+	const params: string[] = [];
+	if (status) params.push(`status=${encodeURIComponent(status)}`);
+	if (categories && categories.length > 0) params.push(`categories=${categories.join(',')}`);
+	if (params.length > 0) url += '?' + params.join('&');
 	const res = await fetch(url, { headers: authHeaders(token) });
 	const data = await res.json();
 	if (!res.ok) throw { status: res.status, ...data };
@@ -22,7 +26,7 @@ export async function getOne(token: string, id: string) {
 	return data;
 }
 
-export async function create(token: string, body: { title: string; description: string }) {
+export async function create(token: string, body: { title: string; description: string; categoryId?: number }) {
 	const res = await fetch(`${API}/tickets`, {
 		method: 'POST',
 		headers: authHeaders(token),

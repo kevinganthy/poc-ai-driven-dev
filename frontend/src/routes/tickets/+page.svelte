@@ -6,10 +6,12 @@
 	import { decodeTokenPayload } from '$lib/utils.ts';
 	import TicketCard from '$lib/components/TicketCard.svelte';
 	import StatusFilter from '$lib/components/StatusFilter.svelte';
+	import CategoryFilter from '$lib/components/CategoryFilter.svelte';
 	import type { Ticket } from '$lib/types.ts';
 
 	let tickets = $state<Ticket[]>([]);
 	let statusFilter = $state<string | undefined>(undefined);
+	let categoryFilter = $state<number[]>([]);
 	let error = $state('');
 	let loading = $state(false);
 	let currentUserId = $state('');
@@ -21,7 +23,7 @@
 		loading = true;
 		error = '';
 		try {
-			tickets = await getAll(token, statusFilter);
+			tickets = await getAll(token, statusFilter, categoryFilter.length > 0 ? categoryFilter : undefined);
 		} catch (err: unknown) {
 			const e = err as { error?: string };
 			error = e.error ?? 'Une erreur est survenue.';
@@ -61,6 +63,7 @@
 		<a href="/tickets/new">Nouveau ticket</a>
 	</header>
 	<StatusFilter value={statusFilter} onchange={(v) => { statusFilter = v; fetchTickets(); }} />
+	<CategoryFilter selectedIds={categoryFilter} onchange={(ids) => { categoryFilter = ids; fetchTickets(); }} />
 	{#if loading}
 		<p>Chargement...</p>
 	{:else if error}

@@ -70,7 +70,7 @@ describe('Tickets page', () => {
 		await user.click(screen.getByRole('button', { name: 'Open' }));
 
 		await vi.waitFor(() => {
-			expect(ticketsApi.getAll).toHaveBeenCalledWith(USER_TOKEN, 'open');
+			expect(ticketsApi.getAll).toHaveBeenCalledWith(USER_TOKEN, 'open', undefined);
 		});
 	});
 

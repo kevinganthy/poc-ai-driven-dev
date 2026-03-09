@@ -12,6 +12,9 @@ jest.mock('../lib/prisma', () => ({
       update: jest.fn(),
       delete: jest.fn(),
     },
+    ticketCategory: {
+      deleteMany: jest.fn(),
+    },
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
@@ -300,5 +303,129 @@ describe('GET /tickets — status query filter', () => {
 
     const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
     expect(callArg.where).not.toHaveProperty('status');
+  });
+});
+
+// ── GET /tickets?categories= — category filter ────────────────────────────────
+describe('GET /tickets — category query filter', () => {
+  it('applies ticketCategory filter when ?categories=1,2 is provided', async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    await request(app)
+      .get('/tickets?categories=1,2')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(callArg.where).toHaveProperty('ticketCategory', {
+      category: { id: { in: [1, 2] } },
+    });
+  });
+
+  it('ignores non-numeric ?categories= values and does not apply filter', async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    await request(app)
+      .get('/tickets?categories=abc')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(callArg.where).not.toHaveProperty('ticketCategory');
+  });
+
+  it('applies a single category filter when ?categories=3 is provided', async () => {
+    mockFindMany.mockResolvedValue([]);
+
+    await request(app)
+      .get('/tickets?categories=3')
+      .set('Authorization', `Bearer ${makeToken('admin')}`);
+
+    const callArg = mockFindMany.mock.calls[0][0] as { where: Record<string, unknown> };
+    expect(callArg.where).toHaveProperty('ticketCategory', {
+      category: { id: { in: [3] } },
+    });
+  });
+});
+
+// ── POST /tickets — category ──────────────────────────────────────────────────
+describe('POST /tickets — with categoryId', () => {
+  it('returns 201 with category object when categoryId is provided', async () => {
+    const userId = 'user-1';
+    mockCreate.mockResolvedValue({
+      id: 'new-ticket',
+      title: 'A valid bug title',
+      description: 'This bug needs immediate attention',
+      status: 'open',
+      authorId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ticketCategory: { category: { id: 1, name: 'Bug' } },
+    });
+
+    const res = await request(app)
+      .post('/tickets')
+      .set('Authorization', `Bearer ${makeToken('user', userId)}`)
+      .send({ title: 'A valid bug title', description: 'This bug needs immediate attention', categoryId: 1 });
+
+    expect(res.status).toBe(201);
+    expect(res.body.category).toEqual({ id: 1, name: 'Bug' });
+  });
+
+  it('returns category: null when no categoryId is provided', async () => {
+    const userId = 'user-1';
+    mockCreate.mockResolvedValue({
+      id: 'new-ticket',
+      title: 'No category ticket',
+      description: 'This ticket has no category here',
+      status: 'open',
+      authorId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ticketCategory: null,
+    });
+
+    const res = await request(app)
+      .post('/tickets')
+      .set('Authorization', `Bearer ${makeToken('user', userId)}`)
+      .send({ title: 'No category ticket', description: 'This ticket has no category here' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.category).toBeNull();
+  });
+
+  it('returns 400 when categoryId is not a positive integer', async () => {
+    const res = await request(app)
+      .post('/tickets')
+      .set('Authorization', `Bearer ${makeToken('user')}`)
+      .send({ title: 'A valid ticket title', description: 'Valid description content here.', categoryId: -1 });
+
+    expect(res.status).toBe(400);
+    expect(prisma.ticket.create).not.toHaveBeenCalled();
+  });
+});
+
+// ── PUT /tickets/:id — category update ───────────────────────────────────────
+describe('PUT /tickets/:id — category update', () => {
+  it('returns ticket with updated category when categoryId is provided', async () => {
+    const userId = 'user-1';
+    mockFindUnique.mockResolvedValue({ id: 'ticket-id-1', authorId: userId, status: 'open' });
+    (prisma.ticketCategory as any).deleteMany = jest.fn().mockResolvedValue({});
+    (prisma.ticket.update as jest.Mock).mockResolvedValue({
+      id: 'ticket-id-1',
+      title: 'Existing ticket title',
+      description: 'Existing description here',
+      status: 'open',
+      authorId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ticketCategory: { category: { id: 2, name: 'Feature' } },
+    });
+
+    const res = await request(app)
+      .put('/tickets/ticket-id-1')
+      .set('Authorization', `Bearer ${makeToken('user', userId)}`)
+      .send({ categoryId: 2 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.category).toEqual({ id: 2, name: 'Feature' });
   });
 });
