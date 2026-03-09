@@ -15,7 +15,7 @@
 | **Date de clôture** | — |
 | **Vélocité cible** | XX points |
 | **Vélocité réelle** | — |
-| **Agents impliqués** | scrum-master, software-engineer, … |
+| **Agents impliqués** | plan-scrum-master, tech-software-engineer, … |
 
 ---
 

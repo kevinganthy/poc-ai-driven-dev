@@ -1,12 +1,12 @@
 ---
 name: sprint-init
-description: Permettre au scrum-master d'initialiser correctement le fichier mémoire d'un sprint à la fin de la planification, en garantissant un numéro de sprint cohérent, un backlog complet et un fichier exploitable par le software-engineer pour reprendre sans perte de contexte.
+description: Permettre au plan-scrum-master d'initialiser correctement le fichier mémoire d'un sprint à la fin de la planification, en garantissant un numéro de sprint cohérent, un backlog complet et un fichier exploitable par le tech-software-engineer pour reprendre sans perte de contexte.
 ---
 
 ## Quand utiliser ce skill
 
 - Après avoir produit un plan de sprint (backlog + estimation + ordre d'exécution)
-- Avant de passer la main au software-engineer
+- Avant de passer la main au tech-software-engineer
 - Lors de la reprise d'un sprint interrompu qui n'a pas encore de fichier mémoire
 
 ---
@@ -56,7 +56,7 @@ Remplace chaque placeholder `[…]` du template avec les valeurs réelles :
 | `#` | Numéro séquentiel de la tâche |
 | `Tâche` | Libellé exact du backlog planifié |
 | `Points` | Story points estimés |
-| `Statut` | `⬜ Todo` (toujours — seul le software-engineer change les statuts) |
+| `Statut` | `⬜ Todo` (toujours — seul le tech-software-engineer change les statuts) |
 | `Notes` | Dépendances ou précisions utiles (peut être vide) |
 
 **Contexte de reprise** — remplis la section avec :
@@ -91,7 +91,7 @@ Nom de fichier : `sprint_[N]_[slug-court].md`
 
 ## Règles importantes
 
-- **Ne jamais marquer une tâche ✅ à la création** — seul le software-engineer met à jour les statuts
+- **Ne jamais marquer une tâche ✅ à la création** — seul le tech-software-engineer met à jour les statuts
 - **Ne pas ajouter de tâches non planifiées** — le fichier doit refléter exactement le plan livré
 - **Ne pas supprimer de sections du template** — même vides, elles sont utilisées par d'autres agents
 - **Toujours utiliser `/memories/sprints/`** comme répertoire (pas `/memories/` directement)
@@ -117,7 +117,7 @@ Nom de fichier : `sprint_[N]_[slug-court].md`
 | **Date de clôture** | — |
 | **Vélocité cible** | 18 points |
 | **Vélocité réelle** | — |
-| **Agents impliqués** | scrum-master, software-engineer, test-engineer |
+| **Agents impliqués** | plan-scrum-master, tech-software-engineer, tech-qa-automation-expert |
 
 ## 🎯 Objectif du sprint
 
@@ -159,5 +159,5 @@ docker compose logs backend  # vérifier le démarrage propre
 | Skill | Lien |
 |-------|------|
 | `sprint-memory` | Définit le protocole complet et le template — ce skill implémente l'étape d'initialisation |
-| `feedback-loop` | Le scrum-master demande le feedback après avoir créé le fichier sprint |
-| `agent-handover` | Le fichier créé par ce skill sert de contexte de reprise pour le software-engineer |
+| `feedback-loop` | Le plan-scrum-master demande le feedback après avoir créé le fichier sprint |
+| `agent-handover` | Le fichier créé par ce skill sert de contexte de reprise pour le tech-software-engineer |

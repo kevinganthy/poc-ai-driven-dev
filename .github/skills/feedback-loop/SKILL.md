@@ -59,7 +59,7 @@ Si la même `Lesson` apparaît **2 fois ou plus**, déplace-la dans la section *
 ## Exemple concret
 
 ```markdown
-### [2026-03-08] agent: software-engineer
+### [2026-03-08] agent: tech-software-engineer
 **Task**: Implémentation de la route PUT /tickets/:id  
 **Outcome**: modified  
 **Comment**: Le middleware d'autorisation était appliqué au mauvais niveau  
