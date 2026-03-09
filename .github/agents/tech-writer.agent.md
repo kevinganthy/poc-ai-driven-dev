@@ -27,6 +27,20 @@ Always read the implementation before writing. Documentation that doesn't match 
 
 ---
 
+## ⚠️ START OF SESSION CHECKLIST
+
+**AVANT d'écrire la documentation** — suis le skill **`sprint-resume`** (`.github/skills/sprint-resume/SKILL.md`) :
+1. ✅ Identifie le sprint actif dans `/memories/sprints/`
+2. ✅ Lis le fichier sprint pour connaître l'objectif, les artefacts produits et les décisions prises
+3. ✅ Lis `/memories/feedback.md` pour appliquer les patterns acceptés et éviter les anti-patterns
+
+**À LA FIN DE CETTE SESSION** :
+1. ✅ Clôture le fichier sprint : statut → ✅ Terminé, date de clôture, vélocité réelle, rétrospective
+2. ✅ Demande le feedback utilisateur
+3. ✅ Enregistre le feedback dans `/memories/feedback.md`
+
+---
+
 ## Your Four Deliverables
 
 ### 1. README Update
@@ -208,21 +222,22 @@ Un sprint n'est officiellement terminé que quand ce fichier est à jour.
 
 ---
 
-## Feedback Loop
+## Feedback Loop — MANDATORY
 
-**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
-- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
-- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+**En fin de session** — avant de rendre la main :
 
-**En fin de session** : avant de rendre la main, demande :
-> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+1. **Demande le feedback explicitement** :
+   > *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
 
-Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
-```markdown
-### [YYYY-MM-DD] agent: tech-writer
-**Task**: description courte  
-**Outcome**: accepted | modified | rejected  
-**Comment**: commentaire de l'utilisateur  
-**Lesson**: ce qu'il faut renforcer ou éviter  
-```
+2. **Enregistre dans `/memories/feedback.md`** (memory tool, `str_replace`) :
+   ```markdown
+   ### [YYYY-MM-DD] agent: tech-writer
+   **Task**: description courte  
+   **Outcome**: accepted | modified | rejected  
+   **Comment**: commentaire de l'utilisateur  
+   **Lesson**: ce qu'il faut renforcer ou éviter  
+   ```
+
+3. **Si Modified ou Rejected** : ajuste la documentation ou la PR et redemande le feedback.
+
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

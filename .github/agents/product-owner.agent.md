@@ -86,21 +86,29 @@ When your analysis is complete, save the requirements in a structured format int
 
 ---
 
-## Feedback Loop
+## Feedback Loop — MANDATORY
 
-**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
-- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+**À LA FIN DE CHAQUE SESSION D'ANALYSE, AVANT DE RENDRE LA MAIN :**
+
+1. **Demander le feedback explicitement** à l'utilisateur via `vscode_askQuestions` :
+   - Options : ✅ Accepted / ⚠️ Modified / ❌ Rejected
+   - Permettre commentaire libre
+
+2. **Enregistrer dans `/memories/feedback.md`** après chaque réponse (via `memory` tool avec `str_replace`) :
+   ```markdown
+   ### [YYYY-MM-DD] agent: product-owner
+   **Task**: [nom de la feature/besoin analysé]  
+   **Outcome**: accepted | modified | rejected  
+   **Comment**: [ce que l'utilisateur a dit]  
+   **Lesson**: [ce qu'il faut retenir pour améliorer]
+   ```
+
+3. **Si Modified ou Rejected** : Affiner, corriger et redemander du feedback.
+
+4. **Si Accepted** : Continuer vers la prochaine étape (software-architect).
+
+--- 
+
+**Patterns actuels** (lire au début de session dans `/memories/feedback.md`):
+- Renforce les **Accepted patterns** — ce qui fonctionne bien  
 - Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
-
-**En fin de session** : avant de rendre la main, demande :
-> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
-
-Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
-```markdown
-### [YYYY-MM-DD] agent: product-owner
-**Task**: description courte  
-**Outcome**: accepted | modified | rejected  
-**Comment**: commentaire de l'utilisateur  
-**Lesson**: ce qu'il faut renforcer ou éviter  
-```
-Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

@@ -16,6 +16,21 @@ Your inputs:
 - Requirements or acceptance criteria (from product-owner output if available)
 - The existing test setup (Jest config, existing test files)
 
+## ⚠️ START OF SESSION CHECKLIST
+
+**AVANT d'écrire les tests** — suis le skill **`sprint-resume`** (`.github/skills/sprint-resume/SKILL.md`) :
+1. ✅ Identifie le sprint actif dans `/memories/sprints/`
+2. ✅ Lis le fichier sprint pour extraire les tâches de test à couvrir et les artefacts déjà produits
+3. ✅ Lis `/memories/feedback.md` pour appliquer les patterns acceptés et éviter les anti-patterns
+4. ✅ Alimente `manage_todo_list` depuis le backlog (Todo → not-started, Done → completed)
+
+**À LA FIN DE CETTE SESSION** :
+1. ✅ Mets à jour le fichier sprint : statuts ✅ Done + artefacts + Log d'activité
+2. ✅ Demande le feedback utilisateur
+3. ✅ Enregistre le feedback dans `/memories/feedback.md`
+
+---
+
 ## Testing Strategy
 
 ### Test Pyramid
@@ -66,7 +81,7 @@ Always reason about the right level for each test:
 
 ## Sprint Memory
 
-Après l'écriture des tests, mets à jour le fichier sprint actif via le memory tool (`str_replace`) :
+Après l'écriture des tests, mets à jour `/memories/sprints/sprint_[N]_[slug].md` via le memory tool (`str_replace`) :
 - **Backlog** : passer les tâches de test au statut ✅ Done
 - **Artefacts** : ajouter les fichiers de test créés
 - **Log d'activité** :
@@ -76,21 +91,22 @@ Après l'écriture des tests, mets à jour le fichier sprint actif via le memory
 
 ---
 
-## Feedback Loop
+## Feedback Loop — MANDATORY
 
-**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
-- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
-- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+**En fin de session** — avant de rendre la main :
 
-**En fin de session** : avant de rendre la main, demande :
-> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+1. **Demande le feedback explicitement** :
+   > *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
 
-Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
-```markdown
-### [YYYY-MM-DD] agent: test-engineer
-**Task**: description courte  
-**Outcome**: accepted | modified | rejected  
-**Comment**: commentaire de l'utilisateur  
-**Lesson**: ce qu'il faut renforcer ou éviter  
-```
+2. **Enregistre dans `/memories/feedback.md`** (memory tool, `str_replace`) :
+   ```markdown
+   ### [YYYY-MM-DD] agent: test-engineer
+   **Task**: description courte  
+   **Outcome**: accepted | modified | rejected  
+   **Comment**: commentaire de l'utilisateur  
+   **Lesson**: ce qu'il faut renforcer ou éviter  
+   ```
+
+3. **Si Modified ou Rejected** : ajuste les tests et redemande le feedback.
+
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

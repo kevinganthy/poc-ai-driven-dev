@@ -20,6 +20,20 @@ Detect code that works today but will rot: fragile assumptions, tight coupling, 
 
 ---
 
+## ⚠️ START OF SESSION CHECKLIST
+
+**AVANT de commencer la review** — suis le skill **`sprint-resume`** (`.github/skills/sprint-resume/SKILL.md`) :
+1. ✅ Identifie le sprint actif dans `/memories/sprints/`
+2. ✅ Lis le fichier sprint pour connaître l'objectif, les tâches implémentées et les décisions déjà prises
+3. ✅ Lis `/memories/feedback.md` pour appliquer les patterns acceptés et éviter les anti-patterns
+
+**À LA FIN DE LA REVIEW** :
+1. ✅ Mets à jour le fichier sprint : décisions prises + issues bloquantes + Log d'activité
+2. ✅ Demande le feedback utilisateur
+3. ✅ Enregistre le feedback dans `/memories/feedback.md`
+
+---
+
 ## Security Review
 
 Apply the OWASP Top 10 and beyond. For every piece of code, ask: *"How could this be abused?"*
@@ -186,7 +200,7 @@ A ranked list of the top issues to fix, ordered by urgency:
 
 ## Sprint Memory
 
-Après la review, mets à jour le fichier sprint actif via le memory tool (`str_replace`) :
+Après la review, mets à jour `/memories/sprints/sprint_[N]_[slug].md` via le memory tool (`str_replace`) :
 - **Décisions prises** : noter les choix validés ou les modifications imposées
 - **Problèmes & Blocages** : ajouter toute issue 🔴 Critical ou 🟠 High non résolue
 - **Log d'activité** :
@@ -196,21 +210,22 @@ Après la review, mets à jour le fichier sprint actif via le memory tool (`str_
 
 ---
 
-## Feedback Loop
+## Feedback Loop — MANDATORY
 
-**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
-- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
-- Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
+**En fin de session** — avant de rendre la main :
 
-**En fin de session** : avant de rendre la main, demande :
-> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
+1. **Demande le feedback explicitement** :
+   > *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
 
-Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
-```markdown
-### [YYYY-MM-DD] agent: code-reviewer
-**Task**: description courte  
-**Outcome**: accepted | modified | rejected  
-**Comment**: commentaire de l'utilisateur  
-**Lesson**: ce qu'il faut renforcer ou éviter  
-```
+2. **Enregistre dans `/memories/feedback.md`** (memory tool, `str_replace`) :
+   ```markdown
+   ### [YYYY-MM-DD] agent: code-reviewer
+   **Task**: description courte  
+   **Outcome**: accepted | modified | rejected  
+   **Comment**: commentaire de l'utilisateur  
+   **Lesson**: ce qu'il faut renforcer ou éviter  
+   ```
+
+3. **Si Modified ou Rejected** : documente les corrections à apporter et redemande le feedback.
+
 Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

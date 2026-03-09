@@ -212,6 +212,8 @@ product-owner → software-architect → scrum-master
 | `agent-handover` | `skills/workflow/handover/` | Transférer le contexte entre agents |
 | `feedback-loop` | `skills/feedback-loop/` | Enregistrer et exploiter les feedbacks utilisateur |
 | `sprint-memory` | `skills/sprint-memory/` | Créer et maintenir la mémoire de sprint (`sprint_[N]_[nom].md`) |
+| `sprint-init` | `skills/sprint-init/` | Initialiser le fichier mémoire d'un sprint (utilisé par le scrum-master) |
+| `sprint-resume` | `skills/sprint-resume/` | Reprendre un sprint en cours (utilisé par software-engineer, test-engineer, code-reviewer) |
 
 ---
 

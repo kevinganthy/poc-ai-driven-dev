@@ -16,6 +16,24 @@ You are the **third step** in the standard workflow:
 
 Always check what inputs you have. If requirements or architecture are missing or vague, flag it and ask for clarification before writing code.
 
+---
+
+## ⚠️ START OF SESSION CHECKLIST
+
+**AVANT de commencer à coder** — suis le skill **`sprint-resume`** (`.github/skills/sprint-resume/SKILL.md`) :
+1. ✅ Identifie le sprint actif dans `/memories/sprints/`
+2. ✅ Lis le fichier sprint pour extraire le contexte de reprise et la prochaine tâche
+3. ✅ Lis `/memories/feedback.md` pour appliquer les patterns acceptés et éviter les anti-patterns
+4. ✅ Alimente `manage_todo_list` depuis le backlog du sprint (Todo → not-started, Done → completed)
+5. ✅ Affiche le résumé de situation avant de commencer
+
+**À LA FIN DE CETTE SESSION** :
+1. ✅ Mets à jour `/memories/sprints/sprint_N_*.md` avec les tâches complétées + Log d'activité
+2. ✅ **Demande le feedback utilisateur** (via `vscode_askQuestions`) — Accepted / Modified / Rejected
+3. ✅ Enregistre le feedback dans `/memories/feedback.md` (avec Lesson identifiée)
+
+---
+
 ## Your Methodology
 
 ### 1. Understand Before Writing
@@ -79,36 +97,66 @@ When implementing a feature, structure your work as follows:
 
 ## Sprint Memory
 
-**En début de session** : lis le fichier sprint actif (statut 🟡 En cours) dans `/memories/` pour connaître l'état exact du backlog et la prochaine tâche.
+**OBLIGATION : Mettre à jour `/memories/sprints/sprint_N_*.md` après CHAQUE tâche ou groupe logique de tâches.**
 
-**Après chaque tâche** (ou en fin de session), mets à jour le fichier sprint via le memory tool (`str_replace`) :
-- **Backlog** : changer le statut (⬜ → 🔄 → ✅)
-- **Artefacts** : ajouter les fichiers créés/modifiés
-- **Log d'activité** (ordre inverse, une ligne) :
-  ```
-  - [YYYY-MM-DD] **software-engineer** — [action réalisée]
-  ```
-- **Contexte de reprise** : mettre à jour la prochaine tâche et les fichiers en cours
+Utiliser le `memory` tool avec `str_replace` pour :
+1. **Marquer la tâche complétée** — changer ✅ dans le tableau Backlog
+2. **Ajouter les fichiers créés/modifiés** dans la section Artefacts
+3. **Ajouter une ligne au Log d'Activité** (format : `[YYYY-MM-DD] **software-engineer** — [description de ce qui a été fait]`)
+4. **Mettre à jour Contexte de Reprise** — prochaines tâches, fichiers en cours
 
-> Si le fichier sprint n'existe pas encore, demande au scrum-master de le créer avant de commencer.
+Si le fichier sprint n'existe pas, le créer avec le template structural suivant :
+```markdown
+# Sprint N — [Nom]
+
+**Date**: YYYY-MM-DD  
+**Status**: 🔄 En cours   
+**Total Points**: X/Y
+
+## Backlog du Sprint
+
+| # | Tâche | Composant | SP | Statut |  
+...
+
+## Artefacts Créés/Modifiés
+
+- ✅ `chemin/fichier.ts`
+- ✅ `chemin/fichier.svelte`
+
+## Log d'Activité
+
+- [YYYY-MM-DD] **software-engineer** — action
+
+## Contexte de Reprise
+
+Prochaine tâche : ...
+```
 
 ---
 
-## Feedback Loop
+## Feedback Loop — MANDATORY
 
-**En début de session** : lis `/memories/feedback.md` (memory tool, commande `view`) et applique les patterns.
-- Renforce les **Accepted patterns** — ce qui fonctionne bien avec cet utilisateur
+**À LA FIN DE CHAQUE SESSION D'IMPLÉMENTATION, AVANT DE RENDRE LA MAIN :**
+
+1. **Demander le feedback explicitement** à l'utilisateur via `vscode_askQuestions` :
+   - Options : ✅ Accepted / ⚠️ Modified / ❌ Rejected
+   - Permettre commentaire libre
+
+2. **Enregistrer dans `/memories/feedback.md`** après chaque réponse (via `memory` tool avec `str_replace`) :
+   ```markdown
+   ### [YYYY-MM-DD] agent: software-engineer
+   **Task**: [nom du sprint/feature implémenté]  
+   **Outcome**: accepted | modified | rejected  
+   **Comment**: [ce que l'utilisateur a dit]  
+   **Lesson**: [ce qu'il faut retenir pour améliorer]
+   ```
+
+3. **Si Modified ou Rejected** : Affiner, corriger et redemander du feedback.
+
+4. **Si Accepted** : Continuer vers la prochaine tâche du sprint.
+
+--- 
+
+**Patterns actuels** (lire au début de session dans `/memories/feedback.md`):
+- Renforce les **Accepted patterns** — ce qui fonctionne bien  
 - Évite les **Anti-patterns** — erreurs ou approches déjà rejetées
-
-**En fin de session** : avant de rendre la main, demande :
-> *"Feedback rapide : accepted / modified / rejected ? Un commentaire ?"*
-
-Puis enregistre dans `/memories/feedback.md` (section **Feedback Log**) :
-```markdown
-### [YYYY-MM-DD] agent: software-engineer
-**Task**: description courte  
-**Outcome**: accepted | modified | rejected  
-**Comment**: commentaire de l'utilisateur  
-**Lesson**: ce qu'il faut renforcer ou éviter  
-```
-Si la même `Lesson` revient 2+ fois, déplace-la dans **Patterns & Lessons Learned**.

@@ -56,8 +56,16 @@
 | 26 | Page `/tickets` — liste + filtre par statut | Frontend | 5 | High | #23, #25 |
 | 27 | Page `/tickets/new` — création | Frontend | 3 | High | #24 |
 | 28 | Page `/tickets/:id/edit` — modification (masque statut si `user`) | Frontend | 3 | High | #24 |
+| 29 | Migration Prisma — `Category` + `TicketCategory` junction table | Backend | 2 | High | #6 |
+| 30 | Seed — catégories prédéfinies (Bug, Feature, Improvement, Question, Documentation, Security, Performance) | Backend | 1 | High | #29 |
+| 31 | Validator Zod — ticket avec optionnel `categoryId` | Backend | 1 | High | #9 |
+| 32 | Ticket service — CRUD avec gestion categoryId + filtrage multi-catégories (`?categories=id1,id2`) | Backend | 5 | High | #14, #31, #29 |
+| 33 | Ticket routes — modifier `GET /tickets` pour accepter query param multi-catégories | Backend | 2 | High | #15, #32 |
+| 34 | Composant `CategoryTag` — affiche catégorie comme tag dans les tickets | Frontend | 2 | High | #23 |
+| 35 | Composant `CategorySelect` — dropdown/select pour catégories dans `TicketForm` | Frontend | 2 | High | #24 |
+| 36 | Composant `CategoryFilter` — filtre multi-sélection par catégories (intégré dans liste) | Frontend | 3 | High | #25, #33 |
 
-**Total : 72 points — 4 sprints**
+**Total : 88 points — 5 sprints**
 
 ---
 
@@ -135,26 +143,48 @@
 
 ---
 
+### Sprint 5 — Catégories (Phase 1)
+**Goal** : Les tickets supportent une catégorie optionnelle ; filtrage multi-catégories opérationnel ; UI complète.
+
+| # | Tâche | SP |
+|---|-------|----|
+| 29 | Prisma migration + seed catégories | 2 |
+| 30 | Seed — catégories prédéfinies | 1 |
+| 31 | Validator ticket avec categoryId | 1 |
+| 32 | Ticket service + filtrage multi-catégories | 5 |
+| 33 | Routes — GET /tickets avec query param catégories | 2 |
+| 34 | Composant `CategoryTag` dans TicketCard | 2 |
+| 35 | Composant `CategorySelect` dans TicketForm | 2 |
+| 36 | Composant `CategoryFilter` multi-sélection | 3 |
+
+**Total : 18 points**
+**Outcome** : Catégories complètement intégrées ; filtrage multi-catégories fonctionnel ; UI harmonieuse avec statut filter.
+
+---
+
 ## 4. Dependency Graph — Chemin critique
 
 ```
 #1 (Docker Compose)
   ├─► #4 (Init backend)
   │     ├─► #5 (Config)
-  │     ├─► #6 (Prisma schema) ─► #7 (Seed)
+  │     ├─► #6 (Prisma schema) ─► #7 (Seed) ─► #29 (Category migration) ─► #30 (Category seed)
   │     ├─► #8 (Zod auth)      ─► #10 (Auth service)
-  │     └─► #9 (Zod ticket)          ├─► #11 (Middleware auth)
+  │     └─► #9 (Zod ticket) ─► #31 (Zod + category)
+  │                                  ├─► #11 (Middleware auth)
   │                                  │     └─► #12 (Middleware authorize)
   │                                  │           ├─► #13 (Auth routes + app.ts)
-  │                                  │           └─► #14 (Ticket service) ─► #15 (Ticket routes)
+  │                                  │           └─► #14 (Ticket service) ─► #32 (Service + filter)
+  │                                  │                                          ├─► #33 (Routes)
+  │                                  │                                          └─► #15 (Ticket routes)
   └─► #16 (Init frontend)
         └─► #17 (Auth store)
-              ├─► #18 (API client auth) ─► #21 (Login) ─► #26 (Tickets list)
-              ├─► #19 (API client tickets)               ─► #27 (New ticket)
-              └─► #20 (Layout + guard)                   └─► #28 (Edit ticket)
+              ├─► #18 (API client auth) ─► #21 (Login) ─► #26 (Tickets list) ─► #34 (CategoryTag)
+              ├─► #19 (API client tickets)               ─► #27 (New ticket)   ─► #35 (CategorySelect)
+              └─► #20 (Layout + guard)                   └─► #28 (Edit ticket) ──► #36 (CategoryFilter)
 ```
 
-**Chemin critique** : `#6 → #10 → #11 → #12 → #14 → #15` (backend) en parallèle de `#17 → #19 → #26` (frontend)
+**Chemin critique** : `#6 → #10 → #11 → #12 → #14 → #15` (backend) en parallèle de `#17 → #19 → #26` (frontend) → `#29 → #32 → #33` (catégories backend) en parallèle de `#34 / #35 / #36` (catégories frontend)
 
 ---
 
@@ -168,10 +198,41 @@
 | Svelte 5 runes — comportement réactif différent de Svelte 4 | Basse | Moyen | S'appuyer uniquement sur `$state` / `$derived` / `$effect` ; éviter les stores legacy |
 | Seed non rejoué si la DB est déjà initialisée | Basse | Faible | Utiliser `upsert` dans le seed pour idempotence |
 | Sprint 4 chargé (18pts, beaucoup de pages UI) | Moyenne | Moyen | Prioriser #26 (liste tickets) — c'est la page centrale ; #27 et #28 peuvent être mutualisés via `TicketForm` |
+| Filtrage multi-catégories — performance lors de requêtes avec beaucoup de catégories | Basse | Moyen | Index Prisma sur `TicketCategory(categoryId, ticketId)` ; tester avec 100+ tickets |
+| CategoryFilter — synchronisation avec StatusFilter dans l'UI | Basse | Moyen | Tester les combinaisons status + catégories ; stocker les 2 états indépendamment |
 
 ---
 
-## 6. Handoff to software-engineer
+## 6. Sprint 5 — Handoff to software-engineer
+
+### Sprint de démarrage pour catégories : **Sprint 5** (après Sprint 4)
+
+### Premières 3 tâches à implémenter (dans l'ordre) :
+
+1. **#29 — Migration Prisma — `Category` + `TicketCategory`**
+   - Table `Category` : `id` (cuid), `name` (unique, string), `color` (optionnel)
+   - Catégories prédéfinies : Bug, Feature, Improvement, Question, Documentation, Security, Performance
+   - Table jonction `TicketCategory` : `ticketId` (FK), `categoryId` (FK), unique(ticketId, categoryId) — **optionnel : un ticket peut avoir 0 ou 1 catégorie**
+
+2. **#30 — Seed des catégories**
+   - Insérer les 7 catégories prédéfinies via `prisma db seed` (ou dans le même script seed)
+
+3. **#32 — Ticket service — intégration catégories + filtrage multi**
+   - Modifier `createTicket()` et `updateTicket()` pour accepter optionnel `categoryId`
+   - Implémenter `getTickets(filters)` avec support pour `categories=id1,id2,id3` (filtrer tickets ayant **une** des catégories)
+   - Valider que le filtrage retourne les tickets avec la catégorie demandée
+
+### Clarifications pour Sprint 5
+
+- Une catégorie par ticket (via jonction, pas de FK direct)
+- Catégories optionnelles — les tickets existants continuent sans catégories
+- Filtrage : inclure tickets ayant **l'une des** catégories sélectionnées (OR logic)
+- Pas de gestion/création de catégories via l'API — seed uniquement
+- Phase 1 : pas de couleur ni métadonnées supplémentaires (extensible ultérieurement)
+
+---
+
+## Handoff — Sprints 1–4 (MVP core)
 
 ### Sprint de démarrage : **Sprint 1**
 
@@ -193,7 +254,7 @@
    - Dépendances : `express`, `@types/express`, `prisma`, `@prisma/client`, `zod`, `jsonwebtoken`, `bcrypt`, `dotenv`
    - Scripts `package.json` : `dev`, `build`, `start`, `seed`
 
-### Clarifications résolues (aucune bloquante)
+### Clarifications résolues (aucune bloquante — MVP Sprints 1–4)
 - Mapping enum Prisma : `in_progress` ↔ `in-progress` géré dans `ticket.service.ts`
 - Rôle `admin` créé uniquement via seed, pas via l'API d'inscription
 - Pas de pagination, pas de refresh token — hors scope confirmé
