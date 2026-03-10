@@ -27,7 +27,7 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/login" | "/login/__tests__" | "/register" | "/register/__tests__" | "/tickets" | "/tickets/__tests__" | "/tickets/new" | "/tickets/new/__tests__" | "/tickets/[id]" | "/tickets/[id]/edit" | "/tickets/[id]/edit/__tests__";
+		RouteId(): "/" | "/admin" | "/admin/categories" | "/admin/categories/__tests__" | "/login" | "/login/__tests__" | "/register" | "/register/__tests__" | "/tickets" | "/tickets/__tests__" | "/tickets/new" | "/tickets/new/__tests__" | "/tickets/[id]" | "/tickets/[id]/edit" | "/tickets/[id]/edit/__tests__";
 		RouteParams(): {
 			"/tickets/[id]": { id: string };
 			"/tickets/[id]/edit": { id: string };
@@ -35,6 +35,9 @@ declare module "$app/types" {
 		};
 		LayoutParams(): {
 			"/": { id?: string };
+			"/admin": Record<string, never>;
+			"/admin/categories": Record<string, never>;
+			"/admin/categories/__tests__": Record<string, never>;
 			"/login": Record<string, never>;
 			"/login/__tests__": Record<string, never>;
 			"/register": Record<string, never>;
@@ -47,7 +50,7 @@ declare module "$app/types" {
 			"/tickets/[id]/edit": { id: string };
 			"/tickets/[id]/edit/__tests__": { id: string }
 		};
-		Pathname(): "/" | "/login" | "/register" | "/tickets" | "/tickets/new" | `/tickets/${string}/edit` & {};
+		Pathname(): "/" | "/admin/categories" | "/login" | "/register" | "/tickets" | "/tickets/new" | `/tickets/${string}/edit` & {};
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

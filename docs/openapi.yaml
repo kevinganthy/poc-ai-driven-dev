@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Ticket Manager API
   description: REST API for ticket management with JWT authentication and RBAC.
-  version: 1.1.0
+  version: 1.2.0
 
 servers:
   - url: http://localhost:3000
@@ -59,6 +59,24 @@ components:
         name:
           type: string
           example: Bug
+
+    CategoryAdmin:
+      type: object
+      description: Category with soft-delete metadata. Returned by admin-only endpoints.
+      required: [id, name, deletedAt]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bug
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Null when active; set to a timestamp when soft-deleted.
+          example: null
 
     CategoryRef:
       type: object
@@ -234,10 +252,9 @@ paths:
   /categories:
     get:
       operationId: listCategories
-      summary: List all available categories
+      summary: List active categories
+      description: Returns categories where `deletedAt` is null. Used by ticket creation and filter selectors. Public endpoint — no authentication required.
       tags: [categories]
-      security:
-        - bearerAuth: []
       responses:
         '200':
           description: List of categories
@@ -262,8 +279,299 @@ paths:
                   name: Security
                 - id: 7
                   name: Performance
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      operationId: createCategory
+      summary: Create a category
+      description: Creates a new category. Name must be unique (1–50 characters). Admin only.
+      tags: [categories]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  example: Infrastructure
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden — admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Category name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /categories/all:
+    get:
+      operationId: listAllCategories
+      summary: List all categories including soft-deleted
+      description: Returns all categories regardless of `deletedAt` status. Admin only.
+      tags: [categories]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of all categories with soft-delete metadata
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryAdmin'
+              example:
+                - id: 1
+                  name: Bug
+                  deletedAt: null
+                - id: 2
+                  name: Feature
+                  deletedAt: null
+                - id: 3
+                  name: Obsolete
+                  deletedAt: '2026-03-10T10:00:00.000Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden — admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /categories/{id}:
+    put:
+      operationId: updateCategory
+      summary: Rename a category
+      description: Updates the name of an existing category. Name must be unique (1–50 characters). Admin only.
+      tags: [categories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Category ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  example: Infrastructure
+      responses:
+        '200':
+          description: Updated category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Validation error or invalid category ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden — admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Category name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      operationId: deleteCategory
+      summary: Soft-delete a category
+      description: |
+        Sets `deletedAt` to the current timestamp. The category is NOT removed from the database.
+
+        After deletion:
+        - The category no longer appears in `GET /categories` (public selector).
+        - Existing ticket associations are preserved — tickets keep their reference.
+        - The category appears as soft-deleted in `GET /categories/all`.
+
+        To undo this operation, use `POST /categories/{id}/restore`.
+
+        Admin only.
+      tags: [categories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Category ID
+          example: 1
+      responses:
+        '204':
+          description: Category soft-deleted — no content returned
+        '400':
+          description: Invalid category ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden — admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /categories/{id}/restore:
+    post:
+      operationId: restoreCategory
+      summary: Restore a soft-deleted category
+      description: |
+        Clears `deletedAt` (sets it to `null`), making the category active again.
+
+        After restoration:
+        - The category reappears in `GET /categories` (public selector).
+        - All ticket associations that were preserved during the soft-delete period remain intact.
+
+        Admin only.
+      tags: [categories]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Category ID
+          example: 1
+      responses:
+        '200':
+          description: Restored category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid category ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden — admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Category not found
           content:
             application/json:
               schema:

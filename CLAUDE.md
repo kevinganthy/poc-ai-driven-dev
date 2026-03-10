@@ -1,4 +1,6 @@
-# CLAUDE.md — poc-ai-driven-dev
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 Ticket management SaaS — **Express API + SvelteKit frontend + PostgreSQL**, containerisé avec Docker Compose.
 

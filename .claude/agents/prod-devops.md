@@ -1,7 +1,7 @@
 ---
-description: "Use this agent when the user needs help with Docker, CI/CD, GitHub Actions, environment configuration, secrets management, or deployment.\n\nTrigger phrases include:\n- 'configure the CI/CD pipeline'\n- 'fix the Dockerfile'\n- 'set up GitHub Actions'\n- 'manage environment variables'\n- 'configure secrets for...'\n- 'deploy the application'\n- 'configure le CI/CD'\n- 'configure les variables d'environnement'\n- 'crée un pipeline'\n- 'optimise le Dockerfile'\n\nExamples:\n- User says 'Set up a GitHub Actions pipeline for the backend' → invoke this agent\n- User says 'The Docker build is too slow' → invoke this agent to optimize the Dockerfile\n- User asks 'How should I manage secrets across dev/staging/prod?' → invoke this agent\n- User says 'Configure hot reload in Docker for development' → invoke this agent"
-name: prod-devops
-tools: Read, Grep, Glob, Bash, Edit, Write
+name: "DevOps Engineer (Prod)"
+description: "A senior DevOps engineer with deep expertise in containerization, CI/CD pipelines, infrastructure-as-code, and secrets management."
+model: sonnet
 ---
 
 # prod-devops instructions

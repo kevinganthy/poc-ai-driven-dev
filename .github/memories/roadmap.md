@@ -65,7 +65,7 @@
 | 35 | Composant `CategorySelect` — dropdown/select pour catégories dans `TicketForm` | Frontend | 2 | High | #24 |
 | 36 | Composant `CategoryFilter` — filtre multi-sélection par catégories (intégré dans liste) | Frontend | 3 | High | #25, #33 |
 
-**Total : 88 points — 5 sprints**
+**Total : 88 points — 5 sprints (MVP)**
 
 ---
 
@@ -143,7 +143,7 @@
 
 ---
 
-### Sprint 5 — Catégories (Phase 1)
+### Sprint 5 — Catégories (Phase 1) ✅ Terminé (2026-03-09)
 **Goal** : Les tickets supportent une catégorie optionnelle ; filtrage multi-catégories opérationnel ; UI complète.
 
 | # | Tâche | SP |
@@ -159,6 +159,26 @@
 
 **Total : 18 points**
 **Outcome** : Catégories complètement intégrées ; filtrage multi-catégories fonctionnel ; UI harmonieuse avec statut filter.
+
+---
+
+### Sprint 6 — Admin CRUD Catégories ✅ Terminé (2026-03-10)
+**Goal** : CRUD admin des catégories avec soft delete — page `/admin/categories`, endpoints API admin, restauration.
+
+| # | Tâche | SP |
+|---|-------|----|
+| 37 | Schema Prisma — `deletedAt DateTime?` + index sur Category | 1 |
+| 38 | Validators Zod — `createCategorySchema`, `updateCategorySchema` | 1 |
+| 39 | Service catégories — `getAll` filtré, `getAllIncludingDeleted`, `create`, `update`, `remove`, `restore` | 2 |
+| 40 | Routes catégories — CRUD admin + `GET /all` + `POST /:id/restore` | 2 |
+| 41 | Tests backend — 24 cas (auth, RBAC, 409, 404, 204) | 1 |
+| 42 | API frontend — 5 fonctions admin + helper `throwApiError` + URL via `$env/static/public` | 1 |
+| 43 | Page `/admin/categories` — liste active/supprimée, création, édition inline, restauration | 1 |
+| 44 | Layout — lien "Gérer les catégories" conditionnel admin | 0.5 |
+| 45 | Tests frontend — 8 cas | 0.5 |
+
+**Total : 10 points**
+**Outcome** : Admins peuvent créer, renommer, supprimer (soft) et restaurer des catégories. Tickets non impactés par les suppressions. 56/56 tests backend + 95/95 tests frontend.
 
 ---
 
