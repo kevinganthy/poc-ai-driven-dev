@@ -12,9 +12,9 @@
 
 ### [2026-03-10] agent: tech-software-engineer
 **Task**: Sprint 6 — CRUD admin catégories (soft delete, restore, page admin, tests backend + frontend)
-**Outcome**: accepted
-**Comment**: Implémentation complète validée — 24 tests backend, 8 tests frontend, tous verts. Soft delete + restauration + page admin Svelte 5 conforme aux conventions.
-**Lesson**: Le pattern soft delete (deletedAt + endpoint restore dédié) est bien compris et appliqué correctement.
+**Outcome**: modified
+**Comment**: Implémentation validée, mais le workflow a sauté les agents plan-* (product-owner, software-architect, scrum-master). L'utilisateur aurait préféré passer par eux pour cadrer la demande client avant d'implémenter.
+**Lesson**: Toute nouvelle demande fonctionnelle doit passer par le workflow standard : client → plan-product-owner → plan-software-architect → plan-scrum-master → tech-*. Ne pas aller directement au tech-software-engineer même si les besoins semblent clairs.
 
 ### [2026-03-09] agent: tech-writer
 **Task**: Sprint 5 — Finalisation sprint (README, OpenAPI, PR description, clôture sprint memory)  
